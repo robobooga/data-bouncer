@@ -1,0 +1,26 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="64" fill="#0F0F12"/>
+  
+  <defs>
+    <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    
+    <linearGradient id="bGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF00FF" />
+      <stop offset="100%" stop-color="#BB86FC" />
+    </linearGradient>
+  </defs>
+
+  <g filter="url(#neonGlow)">
+    <path d="M140 140C110 140 100 160 100 190V230C100 250 90 256 75 256C90 256 100 262 100 282V322C100 352 110 372 140 372" 
+          stroke="#BB86FC" stroke-width="14" stroke-linecap="round" fill="none" />
+    
+    <path d="M372 140C402 140 412 160 412 190V230C412 250 422 256 437 256C422 256 412 262 412 282V322C412 352 402 372 372 372" 
+          stroke="#BB86FC" stroke-width="14" stroke-linecap="round" fill="none" />
+    
+    <path d="M205 170H265C295 170 315 185 315 215C315 235 305 250 285 255C310 260 325 280 325 305C325 340 300 355 265 355H205V170ZM235 200V245H260C275 245 285 240 285 222C285 205 275 200 260 200H235ZM235 275V325H270C285 325 295 315 295 300C295 285 285 275 270 275H235Z" 
+          fill="url(#bGradient)" />
+  </g>
+</svg>
