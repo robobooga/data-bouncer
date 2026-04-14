@@ -13,6 +13,8 @@
   --accent-primary: #00ff88;
   --accent-secondary: #00cc6a;
   --accent-danger: #ff4444;
+  --accent-info: #3b82f6;
+  --accent-info-bg: rgba(59, 130, 246, 0.1);
   --border-color: #2a2a2a;
   --shadow: rgba(0, 0, 0, 0.5);
   --radius: 8px;
@@ -276,6 +278,12 @@ body {
   background: var(--bg-secondary);
   border-radius: var(--radius);
   border: 1px solid var(--border-color);
+  transition: all var(--transition);
+}
+
+.redaction-summary.warning {
+  background: var(--accent-info-bg);
+  border-color: var(--accent-info);
 }
 
 .summary-icon {
@@ -285,6 +293,16 @@ body {
   align-items: center;
   justify-content: center;
   color: var(--accent-primary);
+  position: relative;
+  transition: color var(--transition);
+}
+
+.redaction-summary.warning .summary-icon {
+  color: var(--accent-info);
+}
+
+.summary-icon svg {
+  position: absolute;
 }
 
 .summary-text {
@@ -296,6 +314,11 @@ body {
   font-weight: 600;
   margin-bottom: 4px;
   color: var(--accent-primary);
+  transition: color var(--transition);
+}
+
+.redaction-summary.warning .summary-title {
+  color: var(--accent-info);
 }
 
 .summary-details {

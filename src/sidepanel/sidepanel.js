@@ -61,7 +61,12 @@ class SidePanelUI {
       buttonText: document.getElementById('buttonText'),
       progressBar: document.getElementById('progressBar'),
       resultsSection: document.getElementById('resultsSection'),
+      redactionSummary: document.getElementById('redactionSummary'),
+      summaryIcon: document.getElementById('summaryIcon'),
+      summaryTitle: document.getElementById('summaryTitle'),
       summaryDetails: document.getElementById('summaryDetails'),
+      iconProtected: document.querySelector('.icon-protected'),
+      iconWarning: document.querySelector('.icon-warning'),
       markdownPreview: document.getElementById('markdownPreview'),
       previewContent: document.getElementById('previewContent'),
       copyButton: document.getElementById('copyButton'),
@@ -344,15 +349,33 @@ class SidePanelUI {
     this.elements.resultsSection.classList.remove('hidden');
 
     if (piiDetectionEnabled) {
-      // Update summary
+      // Remove warning state
+      this.elements.redactionSummary.classList.remove('warning');
+
+      // Show checkmark icon, hide warning icon
+      this.elements.iconProtected.classList.remove('hidden');
+      this.elements.iconWarning.classList.add('hidden');
+
+      // Update title and summary
+      this.elements.summaryTitle.textContent = 'Protected';
       const summary = this.redactor.getSummary();
       this.elements.summaryDetails.textContent = summary;
 
       // Update redaction details list
       this.populateRedactionDetails(redactionResult.redactionMap);
     } else {
+      // Add warning state for disabled PII detection
+      this.elements.redactionSummary.classList.add('warning');
+
+      // Show warning icon, hide checkmark icon
+      this.elements.iconProtected.classList.add('hidden');
+      this.elements.iconWarning.classList.remove('hidden');
+
+      // Update title and summary
+      this.elements.summaryTitle.textContent = 'PII Detection Disabled';
+      this.elements.summaryDetails.textContent = 'Content extracted without sensitive data detection';
+
       // Hide redaction details when PII detection is disabled
-      this.elements.summaryDetails.textContent = 'PII detection disabled';
       this.elements.redactionDetails.classList.add('hidden');
     }
 
