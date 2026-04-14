@@ -135,7 +135,14 @@ class SidePanelUI {
    */
   async loadSettings() {
     const settings = await Storage.getSettings();
-    // Apply settings (dark mode, etc.)
+
+    // Apply theme
+    if (settings.darkMode) {
+      document.body.classList.remove('light-mode');
+    } else {
+      document.body.classList.add('light-mode');
+    }
+
     logger.debug('Settings loaded', settings);
   }
 
@@ -149,36 +156,56 @@ class SidePanelUI {
       this.setProcessing(true);
       this.setStatus('processing', 'Scraping page...');
 
+      // Get current settings
+      const settings = await Storage.getSettings();
+
       // Step 1: Scrape the page
       const scraped = await this.scrapePage();
 
-      this.setStatus('processing', 'Analyzing content...');
+      let redactionResult;
 
-      // Step 2: Detect PII
-      const detectionResult = await this.piiDetector.detectPII(scraped.markdown);
+      // Step 2-3: Detect and redact PII only if enabled
+      if (settings.enablePIIDetection) {
+        this.setStatus('processing', 'Analyzing content...');
 
-      this.setStatus('processing', 'Redacting sensitive data...');
+        // Step 2: Detect PII
+        const detectionResult = await this.piiDetector.detectPII(scraped.markdown);
 
-      // Step 3: Redact PII
-      const redactionResult = this.redactor.redact(
-        scraped.markdown,
-        detectionResult.detections
-      );
+        this.setStatus('processing', 'Redacting sensitive data...');
+
+        // Step 3: Redact PII
+        redactionResult = this.redactor.redact(
+          scraped.markdown,
+          detectionResult.detections
+        );
+
+        // Update statistics
+        await Storage.incrementStats('itemsRedacted', redactionResult.stats.totalRedacted);
+      } else {
+        // PII detection disabled - use original markdown as-is
+        redactionResult = {
+          redactedMarkdown: scraped.markdown,
+          stats: { totalRedacted: 0 },
+          redactionMap: new Map()
+        };
+      }
 
       // Step 4: Update state and UI
       this.state.currentMarkdown = scraped.markdown;
       this.state.redactedMarkdown = redactionResult.redactedMarkdown;
       this.state.redactionStats = redactionResult.stats;
 
-      this.displayResults(redactionResult);
+      this.displayResults(redactionResult, settings.enablePIIDetection);
 
       // Update statistics
       await Storage.incrementStats('pagesScraped', 1);
-      await Storage.incrementStats('itemsRedacted', redactionResult.stats.totalRedacted);
 
       this.setStatus('success', 'Ready to copy');
 
-      logger.info('Scraping complete', redactionResult.stats);
+      logger.info('Scraping complete', {
+        piiDetectionEnabled: settings.enablePIIDetection,
+        ...redactionResult.stats
+      });
 
     } catch (error) {
       logger.error('Scrape failed', error);
@@ -320,16 +347,22 @@ class SidePanelUI {
   /**
    * Display scraping results
    */
-  displayResults(redactionResult) {
+  displayResults(redactionResult, piiDetectionEnabled = true) {
     // Show results section
     this.elements.resultsSection.classList.remove('hidden');
 
-    // Update summary
-    const summary = this.redactor.getSummary();
-    this.elements.summaryDetails.textContent = summary;
+    if (piiDetectionEnabled) {
+      // Update summary
+      const summary = this.redactor.getSummary();
+      this.elements.summaryDetails.textContent = summary;
 
-    // Update redaction details list
-    this.populateRedactionDetails(redactionResult.redactionMap);
+      // Update redaction details list
+      this.populateRedactionDetails(redactionResult.redactionMap);
+    } else {
+      // Hide redaction details when PII detection is disabled
+      this.elements.summaryDetails.textContent = 'PII detection disabled';
+      this.elements.redactionDetails.classList.add('hidden');
+    }
 
     // Update textarea with full markdown (no truncation)
     this.elements.markdownPreview.value = redactionResult.redactedMarkdown;
@@ -475,12 +508,11 @@ class SidePanelUI {
   }
 
   /**
-   * Open settings (future implementation)
+   * Open settings page
    */
   openSettings() {
-    logger.info('Settings clicked');
-    // TODO: Implement settings panel
-    alert('Settings panel coming soon!');
+    logger.info('Opening settings');
+    window.location.href = 'settings.html';
   }
 
   /**

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - Data Bouncer</title>
+  <link rel="stylesheet" href="sidepanel.css">
+  <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <button class="btn-back" id="backButton">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M12 4L6 10L12 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <h1 class="header-title">Settings</h1>
+      <div class="header-spacer"></div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Appearance Section -->
+      <section class="settings-section">
+        <h2 class="section-title">Appearance</h2>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Theme</div>
+            <div class="setting-description">Choose between light and dark mode</div>
+          </div>
+          <div class="setting-control">
+            <div class="theme-toggle" id="themeToggle">
+              <button class="theme-option" data-theme="dark">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M17 10.5C16.8 15.2 12.9 19 8.1 19C4.1 19 1 15.9 1 11.9C1 7.1 4.8 3.2 9.5 3C9.2 3.6 9 4.3 9 5C9 7.8 11.2 10 14 10C14.7 10 15.4 9.8 16 9.5C16.3 9.8 16.7 10.1 17 10.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Dark</span>
+              </button>
+              <button class="theme-option" data-theme="light">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="M10 1V3M10 17V19M19 10H17M3 10H1M16.5 3.5L15 5M5 15L3.5 16.5M16.5 16.5L15 15M5 5L3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                <span>Light</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PII Detection Section -->
+      <section class="settings-section">
+        <h2 class="section-title">Sensitive Data Detection</h2>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Enable Sensitive Data Detection</div>
+            <div class="setting-description">Automatically detect and redact sensitive data</div>
+          </div>
+          <div class="setting-control">
+            <label class="toggle-switch">
+              <input type="checkbox" id="enablePIIDetection">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Detection Mode</div>
+            <div class="setting-description">Choose how PII is detected</div>
+          </div>
+          <div class="setting-control">
+            <select class="select-input" id="detectionMode">
+              <option value="auto">Auto (AI + Regex)</option>
+              <option value="ai">AI Only</option>
+              <option value="regex">Regex Only</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Show Redaction Report</div>
+            <div class="setting-description">Display detailed report of redacted items</div>
+          </div>
+          <div class="setting-control">
+            <label class="toggle-switch">
+              <input type="checkbox" id="showRedactionReport">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Privacy Section -->
+      <section class="settings-section">
+        <h2 class="section-title">Privacy</h2>
+
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Auto-wipe Session</div>
+            <div class="setting-description">Clear session data after copying to clipboard</div>
+          </div>
+          <div class="setting-control">
+            <label class="toggle-switch">
+              <input type="checkbox" id="autoWipe">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- About Section -->
+      <section class="settings-section">
+        <h2 class="section-title">About</h2>
+
+        <div class="about-info">
+          <div class="about-row">
+            <span class="about-label">Version</span>
+            <span class="about-value">0.1.0</span>
+          </div>
+          <div class="about-row">
+            <span class="about-label">Storage Used</span>
+            <span class="about-value" id="storageUsed">Calculating...</span>
+          </div>
+        </div>
+
+        <div class="danger-zone">
+          <h3 class="danger-title">Danger Zone</h3>
+          <button class="btn-danger" id="clearAllButton">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M2 4h12M5.5 4V3a1 1 0 011-1h3a1 1 0 011 1v1m2 0v9a2 2 0 01-2 2h-6a2 2 0 01-2-2V4h10z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Clear All Data
+          </button>
+          <p class="danger-description">This will reset all settings and clear stored data. This action cannot be undone.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script type="module" src="settings.js"></script>
+</body>
+</html>
