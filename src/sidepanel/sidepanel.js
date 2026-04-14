@@ -435,9 +435,6 @@ class SidePanelUI {
         length: markdown.length
       });
 
-      // Auto-wipe if enabled
-      await Storage.autoWipeSession();
-
     } catch (error) {
       logger.error('Copy failed', error);
       this.showError('Failed to copy to clipboard');
@@ -489,9 +486,6 @@ class SidePanelUI {
         filename,
         length: markdown.length
       });
-
-      // Auto-wipe if enabled
-      await Storage.autoWipeSession();
 
     } catch (error) {
       logger.error('Download failed', error);

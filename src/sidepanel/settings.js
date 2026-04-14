@@ -43,9 +43,7 @@ class SettingsController {
       backButton: document.getElementById('backButton'),
       enablePIIDetection: document.getElementById('enablePIIDetection'),
       detectionMode: document.getElementById('detectionMode'),
-      showRedactionReport: document.getElementById('showRedactionReport'),
       experimentalPhoneNumber: document.getElementById('experimentalPhoneNumber'),
-      autoWipe: document.getElementById('autoWipe'),
       storageUsed: document.getElementById('storageUsed'),
       clearAllButton: document.getElementById('clearAllButton')
     };
@@ -67,16 +65,8 @@ class SettingsController {
       this.updateSetting('detectionMode', e.target.value);
     });
 
-    this.elements.showRedactionReport.addEventListener('change', (e) => {
-      this.updateSetting('showRedactionReport', e.target.checked);
-    });
-
     this.elements.experimentalPhoneNumber.addEventListener('change', (e) => {
       this.updateExperimentalDataType('phoneNumber', e.target.checked);
-    });
-
-    this.elements.autoWipe.addEventListener('change', (e) => {
-      this.updateSetting('autoWipe', e.target.checked);
     });
 
     // Clear all data button
@@ -93,13 +83,10 @@ class SettingsController {
       // Set form values
       this.elements.enablePIIDetection.checked = this.currentSettings.enablePIIDetection;
       this.elements.detectionMode.value = this.currentSettings.detectionMode;
-      this.elements.showRedactionReport.checked = this.currentSettings.showRedactionReport;
 
       // Experimental data types
       const experimentalSettings = this.currentSettings.experimentalDataTypes || {};
       this.elements.experimentalPhoneNumber.checked = experimentalSettings.phoneNumber || false;
-
-      this.elements.autoWipe.checked = this.currentSettings.autoWipe;
 
       logger.info('Settings loaded', this.currentSettings);
     } catch (error) {
@@ -163,8 +150,7 @@ class SettingsController {
       'Are you sure you want to clear all data?\n\n' +
       'This will:\n' +
       '• Reset all settings to defaults\n' +
-      '• Clear all statistics\n' +
-      '• Remove session data\n\n' +
+      '• Clear all statistics\n\n' +
       'This action cannot be undone.'
     );
 

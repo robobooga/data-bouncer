@@ -73,29 +73,11 @@ export class Storage {
   }
 
   /**
-   * Set session data
-   */
-  static async setSession(data) {
-    await chrome.storage.local.set({ session: data });
-  }
-
-  /**
    * Clear session data
    */
   static async clearSession() {
     await chrome.storage.local.remove('session');
     logger.info('Session cleared');
-  }
-
-  /**
-   * Auto-wipe session data (if enabled)
-   */
-  static async autoWipeSession() {
-    const settings = await this.getSettings();
-    if (settings.autoWipe) {
-      await this.clearSession();
-      logger.info('Auto-wipe executed');
-    }
   }
 
   /**
@@ -105,9 +87,7 @@ export class Storage {
     return {
       enablePIIDetection: true,
       detectionMode: 'auto', // 'auto', 'regex'
-      autoWipe: false,
       darkMode: true,
-      showRedactionReport: true,
       experimentalDataTypes: {
         phoneNumber: false // Disabled by default due to high false positives
       }

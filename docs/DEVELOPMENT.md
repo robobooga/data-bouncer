@@ -207,19 +207,12 @@ const settings = await Storage.getSettings();
 await Storage.updateSettings({ darkMode: true });
 ```
 
-### Session Data
+### Session Data (TODO: Scope this out)
 ```javascript
-// Save current scrape
-await Storage.setSession({
-  markdown: '...',
-  redacted: '...',
-  timestamp: Date.now()
-});
-
-// Retrieve
+// Retrieve session data
 const session = await Storage.getSession();
 
-// Clear (auto-wipe)
+// Clear session (auto-wipe)
 await Storage.clearSession();
 ```
 

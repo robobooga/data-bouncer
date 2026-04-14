@@ -98,7 +98,6 @@ async function initializeExtension() {
     settings: {
       enablePIIDetection: true,
       detectionMode: 'auto', // 'auto', 'regex'
-      autoWipe: false,
       darkMode: true
     },
     stats: {
