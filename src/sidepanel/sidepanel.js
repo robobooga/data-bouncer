@@ -68,7 +68,11 @@ class SidePanelUI {
       copyButtonText: document.getElementById('copyButtonText'),
       downloadButton: document.getElementById('downloadButton'),
       downloadButtonText: document.getElementById('downloadButtonText'),
-      settingsButton: document.getElementById('settingsButton')
+      settingsButton: document.getElementById('settingsButton'),
+      redactionDetails: document.getElementById('redactionDetails'),
+      detailsToggle: document.getElementById('detailsToggle'),
+      detailsContent: document.getElementById('detailsContent'),
+      redactedList: document.getElementById('redactedList')
     };
   }
 
@@ -80,6 +84,7 @@ class SidePanelUI {
     this.elements.copyButton.addEventListener('click', () => this.handleCopy());
     this.elements.downloadButton.addEventListener('click', () => this.handleDownload());
     this.elements.settingsButton.addEventListener('click', () => this.openSettings());
+    this.elements.detailsToggle.addEventListener('click', () => this.toggleRedactionDetails());
 
     // Listen for tab changes to update current page info
     chrome.tabs.onActivated.addListener(() => {
@@ -323,11 +328,63 @@ class SidePanelUI {
     const summary = this.redactor.getSummary();
     this.elements.summaryDetails.textContent = summary;
 
+    // Update redaction details list
+    this.populateRedactionDetails(redactionResult.redactionMap);
+
     // Update textarea with full markdown (no truncation)
     this.elements.markdownPreview.value = redactionResult.redactedMarkdown;
 
     // Scroll results into view
     this.elements.resultsSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  /**
+   * Populate the redaction details list
+   */
+  populateRedactionDetails(redactionMap) {
+    // Clear existing items
+    this.elements.redactedList.innerHTML = '';
+
+    if (!redactionMap || redactionMap.size === 0) {
+      this.elements.redactionDetails.classList.add('hidden');
+      return;
+    }
+
+    // Show details section
+    this.elements.redactionDetails.classList.remove('hidden');
+
+    // Create list items
+    const items = Array.from(redactionMap.entries())
+      .sort((a, b) => a[1].position - b[1].position);
+
+    items.forEach(([placeholder, info]) => {
+      const li = document.createElement('li');
+      li.className = 'redacted-item';
+
+      li.innerHTML = `
+        <div class="item-header">
+          <span class="item-tag">${placeholder}</span>
+          <span class="item-type">${info.type}</span>
+        </div>
+        <div class="item-original">${info.original}</div>
+      `;
+      this.elements.redactedList.appendChild(li);
+    });
+  }
+
+  /**
+   * Toggle redaction details visibility
+   */
+  toggleRedactionDetails() {
+    const isHidden = this.elements.detailsContent.classList.contains('hidden');
+
+    if (isHidden) {
+      this.elements.detailsContent.classList.remove('hidden');
+      this.elements.redactionDetails.classList.add('open');
+    } else {
+      this.elements.detailsContent.classList.add('hidden');
+      this.elements.redactionDetails.classList.remove('open');
+    }
   }
 
   /**
@@ -437,7 +494,7 @@ class SidePanelUI {
       this.elements.buttonText.textContent = 'Processing...';
       this.elements.progressBar.classList.remove('hidden');
     } else {
-      this.elements.buttonText.textContent = 'Scrape & Protect';
+      this.elements.buttonText.textContent = 'Convert';
       this.elements.progressBar.classList.add('hidden');
     }
   }

@@ -59,6 +59,21 @@
           </div>
         </div>
 
+        <!-- Redaction Details (Collapsible) -->
+        <div class="redaction-details hidden" id="redactionDetails">
+          <button class="details-toggle" id="detailsToggle">
+            <span>View Redacted Items</span>
+            <svg class="toggle-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M4 6L8 10L12 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="details-content hidden" id="detailsContent">
+            <ul class="redacted-list" id="redactedList">
+              <!-- Items will be injected here -->
+            </ul>
+          </div>
+        </div>
+
         <!-- Markdown Preview -->
         <div class="markdown-preview">
           <div class="preview-header">

@@ -87,7 +87,7 @@ npm test
 
 **Message Flow:**
 1. User clicks extension icon → Opens side panel
-2. User clicks "Scrape & Protect" → Side panel sends message to background
+2. User clicks "Convert" → Side panel sends message to background
 3. Background → Content script: "Extract page content"
 4. Content script → Uses Scraper to convert to markdown
 5. Side panel → PIIDetector analyzes markdown
