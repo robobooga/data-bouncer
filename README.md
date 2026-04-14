@@ -1,4 +1,4 @@
-# Bouncer - AI Data Gatekeeper
+# Data Bouncer - AI Data Gatekeeper
 
 A security-first Chrome Extension that acts as a "Data Firewall" between the web and Large Language Models (LLMs). Bouncer scrapes web content into clean Markdown while automatically redacting sensitive PII/corporate data using on-device AI.
 

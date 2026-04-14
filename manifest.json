@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Bouncer - AI Data Gatekeeper",
+  "name": "Data Bouncer - AI Data Gatekeeper",
   "version": "0.1.0",
   "description": "Security-first web scraper that redacts PII before you paste into LLMs",
   "permissions": [
@@ -51,6 +51,7 @@
       "resources": [
         "src/lib/*.js",
         "src/utils/*.js",
+        "src/content/*.js",
         "vendor/*.js"
       ],
       "matches": ["<all_urls>"]

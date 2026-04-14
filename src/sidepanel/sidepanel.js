@@ -113,7 +113,7 @@ class SidePanelUI {
         this.elements.scrapeButton.disabled = true;
         this.elements.scrapeButton.title = protectedCheck.message;
       } else {
-        this.setStatus('idle', 'Ready to scrape');
+        this.setStatus('idle', 'Ready');
         this.elements.scrapeButton.disabled = false;
         this.elements.scrapeButton.title = 'Extract and protect this page';
       }
@@ -210,8 +210,8 @@ class SidePanelUI {
       // If not ready, inject it programmatically
       if (!scriptReady) {
         await this.injectContentScript();
-        // Wait a moment for initialization
-        await new Promise(resolve => setTimeout(resolve, 100));
+        // Wait a moment for initialization (ES modules may take time)
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
 
       const response = await chrome.tabs.sendMessage(this.currentTab.id, {
@@ -246,6 +246,7 @@ class SidePanelUI {
       { pattern: /^file:\/\//, name: 'Local file pages', example: 'file:// URLs (requires special permissions)' },
       { pattern: /^view-source:/, name: 'View source pages', example: 'view-source:' },
       { pattern: /chrome\.google\.com\/webstore/, name: 'Chrome Web Store', example: 'extension store pages' },
+      { pattern: /chromewebstore\.google\.com/, name: 'Chrome Web Store', example: 'extension store pages' },
       { pattern: /microsoftedge\.microsoft\.com\/addons/, name: 'Edge Add-ons Store', example: 'extension store pages' }
     ];
 
@@ -272,8 +273,9 @@ class SidePanelUI {
     if (url.startsWith('about:')) return 'browser internal';
     if (url.startsWith('file://')) return 'local file';
     if (url.includes('chrome.google.com/webstore')) return 'Chrome Web Store';
+    if (url.includes('chromewebstore.google.com')) return 'Chrome Web Store';
     if (url.includes('microsoftedge.microsoft.com/addons')) return 'Edge Add-ons';
-    return 'protected';
+    return 'public';
   }
 
   /**
