@@ -11,7 +11,7 @@ const logger = new Logger('PIIDetector');
 
 export class PIIDetector {
   constructor() {
-    this.detectionMode = 'auto'; // 'auto', 'ai', 'regex'
+    this.detectionMode = 'auto'; // 'auto', 'regex'
     this.languageModel = null;
     this.initialized = false;
   }

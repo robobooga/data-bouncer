@@ -104,7 +104,7 @@ export class Storage {
   static getDefaultSettings() {
     return {
       enablePIIDetection: true,
-      detectionMode: 'auto', // 'auto', 'ai', 'regex'
+      detectionMode: 'auto', // 'auto', 'regex'
       autoWipe: false,
       darkMode: true,
       showRedactionReport: true

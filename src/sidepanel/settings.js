@@ -41,7 +41,6 @@ class SettingsController {
   cacheElements() {
     this.elements = {
       backButton: document.getElementById('backButton'),
-      themeToggle: document.getElementById('themeToggle'),
       enablePIIDetection: document.getElementById('enablePIIDetection'),
       detectionMode: document.getElementById('detectionMode'),
       showRedactionReport: document.getElementById('showRedactionReport'),
@@ -57,15 +56,6 @@ class SettingsController {
   setupEventListeners() {
     // Back button
     this.elements.backButton.addEventListener('click', () => this.navigateBack());
-
-    // Theme toggle
-    this.elements.themeToggle.addEventListener('click', (e) => {
-      const themeButton = e.target.closest('.theme-option');
-      if (themeButton) {
-        const theme = themeButton.dataset.theme;
-        this.updateTheme(theme);
-      }
-    });
 
     // Settings toggles and inputs
     this.elements.enablePIIDetection.addEventListener('change', (e) => {
@@ -95,9 +85,6 @@ class SettingsController {
     try {
       this.currentSettings = await Storage.getSettings();
 
-      // Apply theme
-      this.applyTheme(this.currentSettings.darkMode ? 'dark' : 'light');
-
       // Set form values
       this.elements.enablePIIDetection.checked = this.currentSettings.enablePIIDetection;
       this.elements.detectionMode.value = this.currentSettings.detectionMode;
@@ -122,43 +109,6 @@ class SettingsController {
       logger.error('Failed to load storage info', error);
       this.elements.storageUsed.textContent = 'N/A';
     }
-  }
-
-  /**
-   * Update theme setting
-   */
-  async updateTheme(theme) {
-    try {
-      const darkMode = theme === 'dark';
-      await Storage.updateSettings({ darkMode });
-      this.applyTheme(theme);
-      logger.info('Theme updated', { theme });
-    } catch (error) {
-      logger.error('Failed to update theme', error);
-      this.showNotification('Failed to update theme', 'error');
-    }
-  }
-
-  /**
-   * Apply theme to UI
-   */
-  applyTheme(theme) {
-    // Update body class
-    if (theme === 'light') {
-      document.body.classList.add('light-mode');
-    } else {
-      document.body.classList.remove('light-mode');
-    }
-
-    // Update active button
-    const themeButtons = this.elements.themeToggle.querySelectorAll('.theme-option');
-    themeButtons.forEach(button => {
-      if (button.dataset.theme === theme) {
-        button.classList.add('active');
-      } else {
-        button.classList.remove('active');
-      }
-    });
   }
 
   /**

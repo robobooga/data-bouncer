@@ -142,7 +142,7 @@ describe('PIIDetector', () => {
   describe('Detection Mode', () => {
     test('defaults to auto mode', async () => {
       const result = await detector.detectPII('test');
-      expect(['auto', 'ai', 'regex']).toContain(result.mode);
+      expect(['auto', 'regex']).toContain(result.mode);
     });
 
     test('falls back to regex when AI unavailable', async () => {

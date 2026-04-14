@@ -135,14 +135,6 @@ class SidePanelUI {
    */
   async loadSettings() {
     const settings = await Storage.getSettings();
-
-    // Apply theme
-    if (settings.darkMode) {
-      document.body.classList.remove('light-mode');
-    } else {
-      document.body.classList.add('light-mode');
-    }
-
     logger.debug('Settings loaded', settings);
   }
 

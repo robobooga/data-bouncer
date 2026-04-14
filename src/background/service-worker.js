@@ -97,7 +97,7 @@ async function initializeExtension() {
   await chrome.storage.local.set({
     settings: {
       enablePIIDetection: true,
-      detectionMode: 'auto', // 'auto', 'ai', 'regex'
+      detectionMode: 'auto', // 'auto', 'regex'
       autoWipe: false,
       darkMode: true
     },
