@@ -176,44 +176,6 @@ export class Redactor {
   }
 
   /**
-   * Create a detailed redaction report
-   */
-  generateReport() {
-    const items = [];
-
-    this.redactionMap.forEach((value, placeholder) => {
-      items.push({
-        placeholder,
-        type: value.type,
-        original: this.maskOriginal(value.original, value.type),
-        position: value.position
-      });
-    });
-
-    return {
-      timestamp: new Date().toISOString(),
-      totalItems: items.length,
-      items: items.sort((a, b) => a.position - b.position)
-    };
-  }
-
-  /**
-   * Partially mask original value for audit trail
-   * Shows first/last chars only
-   */
-  maskOriginal(text, type) {
-    if (text.length <= 4) {
-      return '***';
-    }
-
-    const first = text.slice(0, 2);
-    const last = text.slice(-2);
-    const stars = '*'.repeat(Math.min(text.length - 4, 8));
-
-    return `${first}${stars}${last}`;
-  }
-
-  /**
    * Clear redaction state
    */
   clear() {
