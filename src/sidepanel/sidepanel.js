@@ -412,7 +412,7 @@ class SidePanelUI {
       li.innerHTML = `
         <div class="item-header">
           <span class="item-tag">${placeholder}</span>
-          <span class="item-type">${info.type}</span>
+          <span class="item-type">${this.redactor.getTypeLabel(info.type)}</span>
         </div>
         <div class="item-original">${info.original}</div>
       `;
