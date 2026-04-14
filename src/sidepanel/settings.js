@@ -44,6 +44,7 @@ class SettingsController {
       enablePIIDetection: document.getElementById('enablePIIDetection'),
       detectionMode: document.getElementById('detectionMode'),
       showRedactionReport: document.getElementById('showRedactionReport'),
+      experimentalPhoneNumber: document.getElementById('experimentalPhoneNumber'),
       autoWipe: document.getElementById('autoWipe'),
       storageUsed: document.getElementById('storageUsed'),
       clearAllButton: document.getElementById('clearAllButton')
@@ -70,6 +71,10 @@ class SettingsController {
       this.updateSetting('showRedactionReport', e.target.checked);
     });
 
+    this.elements.experimentalPhoneNumber.addEventListener('change', (e) => {
+      this.updateExperimentalDataType('phoneNumber', e.target.checked);
+    });
+
     this.elements.autoWipe.addEventListener('change', (e) => {
       this.updateSetting('autoWipe', e.target.checked);
     });
@@ -89,6 +94,11 @@ class SettingsController {
       this.elements.enablePIIDetection.checked = this.currentSettings.enablePIIDetection;
       this.elements.detectionMode.value = this.currentSettings.detectionMode;
       this.elements.showRedactionReport.checked = this.currentSettings.showRedactionReport;
+
+      // Experimental data types
+      const experimentalSettings = this.currentSettings.experimentalDataTypes || {};
+      this.elements.experimentalPhoneNumber.checked = experimentalSettings.phoneNumber || false;
+
       this.elements.autoWipe.checked = this.currentSettings.autoWipe;
 
       logger.info('Settings loaded', this.currentSettings);
@@ -121,6 +131,26 @@ class SettingsController {
       logger.info('Setting updated', { key, value });
     } catch (error) {
       logger.error('Failed to update setting', error);
+      this.showNotification('Failed to update setting', 'error');
+    }
+  }
+
+  /**
+   * Update experimental data type setting
+   */
+  async updateExperimentalDataType(dataType, enabled) {
+    try {
+      const experimentalDataTypes = {
+        ...(this.currentSettings.experimentalDataTypes || {}),
+        [dataType]: enabled
+      };
+
+      await Storage.updateSettings({ experimentalDataTypes });
+      this.currentSettings.experimentalDataTypes = experimentalDataTypes;
+
+      logger.info('Experimental data type updated', { dataType, enabled });
+    } catch (error) {
+      logger.error('Failed to update experimental data type', error);
       this.showNotification('Failed to update setting', 'error');
     }
   }

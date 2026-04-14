@@ -40,15 +40,28 @@ describe('PIIDetector', () => {
   });
 
   describe('Phone Number Detection', () => {
-    test('detects US phone numbers', async () => {
+    test('does not detect phone numbers by default (experimental disabled)', async () => {
       const text = 'Call me at (555) 123-4567';
       const result = await detector.detectPII(text);
+
+      const phones = result.detections.filter(d => d.type === 'PHONE');
+      expect(phones).toHaveLength(0);
+    });
+
+    test('detects US phone numbers when experimental enabled', async () => {
+      const text = 'Call me at (555) 123-4567';
+      const settings = {
+        experimentalDataTypes: {
+          phoneNumber: true
+        }
+      };
+      const result = await detector.detectPII(text, settings);
 
       const phones = result.detections.filter(d => d.type === 'PHONE');
       expect(phones).toHaveLength(1);
     });
 
-    test('detects various phone formats', async () => {
+    test('detects various phone formats when experimental enabled', async () => {
       const formats = [
         '555-123-4567',
         '(555) 123-4567',
@@ -56,8 +69,14 @@ describe('PIIDetector', () => {
         '+1-555-123-4567'
       ];
 
+      const settings = {
+        experimentalDataTypes: {
+          phoneNumber: true
+        }
+      };
+
       for (const phone of formats) {
-        const result = await detector.detectPII(phone);
+        const result = await detector.detectPII(phone, settings);
         const phoneDetections = result.detections.filter(d => d.type === 'PHONE');
         expect(phoneDetections.length).toBeGreaterThan(0);
       }

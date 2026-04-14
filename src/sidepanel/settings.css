@@ -55,6 +55,15 @@
   margin-bottom: 16px;
 }
 
+.section-description {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-top: -8px;
+  margin-bottom: 16px;
+  padding-left: 2px;
+}
+
 /* Setting Items */
 .setting-item {
   display: flex;

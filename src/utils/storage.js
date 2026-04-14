@@ -107,7 +107,10 @@ export class Storage {
       detectionMode: 'auto', // 'auto', 'regex'
       autoWipe: false,
       darkMode: true,
-      showRedactionReport: true
+      showRedactionReport: true,
+      experimentalDataTypes: {
+        phoneNumber: false // Disabled by default due to high false positives
+      }
     };
   }
 

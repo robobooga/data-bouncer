@@ -88,15 +88,17 @@ Be precise and conservative - only flag clear PII, not generic terms.`;
   /**
    * Main detection method - detects PII in markdown text
    * @param {string} markdown - The markdown content to analyze
+   * @param {Object} settings - User settings for detection configuration
    * @returns {Promise<DetectionResult>}
    */
-  async detectPII(markdown) {
+  async detectPII(markdown, settings = {}) {
     await this.initialize();
 
     const startTime = Date.now();
     logger.info('Starting PII detection', {
       mode: this.detectionMode,
-      length: markdown.length
+      length: markdown.length,
+      experimentalEnabled: settings.experimentalDataTypes
     });
 
     let detections;
@@ -104,7 +106,7 @@ Be precise and conservative - only flag clear PII, not generic terms.`;
     if (this.detectionMode === 'ai' && this.languageModel) {
       detections = await this.detectWithAI(markdown);
     } else {
-      detections = this.detectWithRegex(markdown);
+      detections = this.detectWithRegex(markdown, settings);
     }
 
     const duration = Date.now() - startTime;
@@ -174,9 +176,9 @@ Be precise and conservative - only flag clear PII, not generic terms.`;
   /**
    * Regex-based PII detection (fallback)
    */
-  detectWithRegex(markdown) {
+  detectWithRegex(markdown, settings = {}) {
     const detections = [];
-    const patterns = this.getRegexPatterns();
+    const patterns = this.getRegexPatterns(settings);
 
     patterns.forEach(({ type, regex, validator }) => {
       let match;
@@ -204,16 +206,13 @@ Be precise and conservative - only flag clear PII, not generic terms.`;
 
   /**
    * Regex patterns for common PII types
+   * @param {Object} settings - User settings to filter experimental patterns
    */
-  getRegexPatterns() {
-    return [
+  getRegexPatterns(settings = {}) {
+    const patterns = [
       {
         type: 'EMAIL',
         regex: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g
-      },
-      {
-        type: 'PHONE',
-        regex: /(\+\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/g
       },
       {
         type: 'SSN',
@@ -238,6 +237,20 @@ Be precise and conservative - only flag clear PII, not generic terms.`;
         validator: this.validateIPAddress
       }
     ];
+
+    // Experimental data types (disabled by default due to false positives)
+    const experimentalPatterns = [];
+
+    // Add phone number detection if explicitly enabled
+    const experimentalSettings = settings.experimentalDataTypes || {};
+    if (experimentalSettings.phoneNumber === true) {
+      experimentalPatterns.push({
+        type: 'PHONE',
+        regex: /(\+\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/g
+      });
+    }
+
+    return [...patterns, ...experimentalPatterns];
   }
 
   /**

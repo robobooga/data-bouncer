@@ -160,8 +160,8 @@ class SidePanelUI {
       if (settings.enablePIIDetection) {
         this.setStatus('processing', 'Analyzing content...');
 
-        // Step 2: Detect PII
-        const detectionResult = await this.piiDetector.detectPII(scraped.markdown);
+        // Step 2: Detect PII (pass settings for experimental data types)
+        const detectionResult = await this.piiDetector.detectPII(scraped.markdown, settings);
 
         this.setStatus('processing', 'Redacting sensitive data...');
 

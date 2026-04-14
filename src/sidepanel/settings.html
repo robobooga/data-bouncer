@@ -42,7 +42,7 @@
         <div class="setting-item">
           <div class="setting-info">
             <div class="setting-label">Detection Mode</div>
-            <div class="setting-description">Choose how PII is detected</div>
+            <div class="setting-description">Choose how data is detected</div>
           </div>
           <div class="setting-control">
             <select class="select-input" id="detectionMode">
@@ -60,6 +60,27 @@
           <div class="setting-control">
             <label class="toggle-switch">
               <input type="checkbox" id="showRedactionReport">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Experimental Data Types Section -->
+      <section class="settings-section">
+        <h2 class="section-title">Experimental Data Types</h2>
+        <p class="section-description">
+          These data types may produce false positives. Enable only if needed.
+        </p>
+      
+        <div class="setting-item">
+          <div class="setting-info">
+            <div class="setting-label">Phone Number Detection</div>
+            <div class="setting-description">Detect phone numbers (may flag dates, IDs, and other numeric patterns)</div>
+          </div>
+          <div class="setting-control">
+            <label class="toggle-switch">
+              <input type="checkbox" id="experimentalPhoneNumber">
               <span class="toggle-slider"></span>
             </label>
           </div>
