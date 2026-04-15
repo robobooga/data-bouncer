@@ -73,14 +73,16 @@ export class PIIDetector {
    */
   getSystemPrompt() {
     return `You are a PII (Personally Identifiable Information) detection assistant.
-Your task is to identify sensitive information in text including:
-- Email addresses
-- Phone numbers
-- Physical addresses
-- Identity Numbers (Social Security, NRIC, etc.)
-- API keys and tokens
-- Credit card numbers
+Your task is to identify and redact sensitive information in the provided text to prevent data exfiltration.
 
+Identify and redact the following categories:
+- Individual Names (Full names or surnames)
+- Email addresses and Usernames
+- Phone numbers and Fax numbers
+- Physical addresses (Home and Office)
+- Identity Numbers (Social Security, NRIC, Passports, Driver’s Licenses)
+- Credentials (Passwords, Secret Keys, API Tokens)
+- Financial Data (Credit Card numbers, Bank Account numbers, IBANs)
 When you find PII, respond with JSON containing the type and position of each item.
 Be precise and conservative - only flag clear PII, not generic terms.`;
   }

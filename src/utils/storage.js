@@ -13,7 +13,20 @@ export class Storage {
    */
   static async getSettings() {
     const { settings } = await chrome.storage.local.get('settings');
-    return settings || this.getDefaultSettings();
+    // Always merge with defaults to ensure new settings keys are present
+    const defaults = this.getDefaultSettings();
+
+    if (!settings) return defaults;
+
+    // Deep merge for nested objects (experimentalDataTypes)
+    return {
+      ...defaults,
+      ...settings,
+      experimentalDataTypes: {
+        ...defaults.experimentalDataTypes,
+        ...(settings.experimentalDataTypes || {})
+      }
+    };
   }
 
   /**

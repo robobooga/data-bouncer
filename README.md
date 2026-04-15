@@ -137,12 +137,12 @@ This will:
 
 **Message Flow:**
 1. User clicks extension icon → Opens side panel
-2. User clicks "Convert" → Side panel sends message to background
-3. Background → Content script: "Extract page content"
-4. Content script → Uses Scraper to convert to markdown
-5. Side panel → PIIDetector analyzes markdown
-6. Side panel → Redactor replaces PII with placeholders
-7. User copies redacted markdown to clipboard
+2. User clicks "Convert" → Side panel sends `SCRAPE_CONTENT` message directly to content script
+3. Content script uses Scraper (Readability.js + Turndown) to extract and convert page to markdown
+4. Content script returns markdown to side panel
+5. Side panel uses PIIDetector to analyze markdown (Gemini Nano or regex fallback)
+6. Side panel uses Redactor to replace detected PII with smart placeholders
+7. User copies redacted markdown to clipboard or downloads as .md file
 
 **Key Principles:**
 - **Separation of Concerns**: Each module has a single responsibility
@@ -168,7 +168,3 @@ This project includes the following third-party libraries:
 
 - **Readability.js**: Licensed under the [Apache License 2.0](vendor/LICENSE-READABILITY).
 - **Turndown**: Licensed under the [MIT License](vendor/LICENSE-TURNDOWN).
-
-## Contributing
-
-See PRD.md for product roadmap and feature specifications.

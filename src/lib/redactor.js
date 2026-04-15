@@ -20,6 +20,10 @@ export class Redactor {
    * @returns {Object} { redactedMarkdown, redactionMap, stats }
    */
   redact(markdown, detections) {
+    // Reset state first (before early return to clear previous counts)
+    this.redactionMap = new Map();
+    this.counters = {};
+
     if (!detections || detections.length === 0) {
       return {
         redactedMarkdown: markdown,
@@ -29,10 +33,6 @@ export class Redactor {
     }
 
     logger.info('Starting redaction', { detectionsCount: detections.length });
-
-    // Reset state
-    this.redactionMap = new Map();
-    this.counters = {};
 
     // Sort detections by position (ascending) to assign numbers in order of appearance
     const detectionsWithPlaceholders = [...detections]
@@ -99,24 +99,55 @@ export class Redactor {
    */
   getPlaceholderType(type, _text) {
     switch (type.toUpperCase()) {
-      case 'EMAIL':
-        return 'EMAIL';
-      case 'PHONE':
-        return 'PHONE';
-      case 'SSN':
-        return 'SSN';
-      case 'CREDIT_CARD':
-        return 'CARD';
-      case 'API_KEY':
-        return 'API_KEY';
-      case 'JWT':
-        return 'TOKEN';
-      case 'IP_ADDRESS':
-        return 'IP';
+      // Individual Names
       case 'NAME':
         return 'NAME';
+      // Email addresses and Usernames
+      case 'EMAIL':
+        return 'EMAIL';
+      case 'USERNAME':
+        return 'USERNAME';
+      // Phone numbers and Fax numbers
+      case 'PHONE':
+        return 'PHONE';
+      case 'FAX':
+        return 'FAX';
+      // Physical addresses
       case 'ADDRESS':
         return 'ADDRESS';
+      // Identity Numbers
+      case 'SSN':
+        return 'SSN';
+      case 'NRIC':
+        return 'NRIC';
+      case 'PASSPORT':
+        return 'PASSPORT';
+      case 'DRIVERS_LICENSE':
+      case 'DRIVER_LICENSE':
+        return 'DRIVERS_LICENSE';
+      case 'ID_NUMBER':
+        return 'ID_NUMBER';
+      // Credentials
+      case 'PASSWORD':
+        return 'PASSWORD';
+      case 'SECRET_KEY':
+        return 'SECRET_KEY';
+      case 'API_KEY':
+        return 'API_KEY';
+      case 'API_TOKEN':
+        return 'API_TOKEN';
+      case 'JWT':
+        return 'TOKEN';
+      // Financial Data
+      case 'CREDIT_CARD':
+        return 'CARD';
+      case 'BANK_ACCOUNT':
+        return 'BANK_ACCOUNT';
+      case 'IBAN':
+        return 'IBAN';
+      // Legacy/Other
+      case 'IP_ADDRESS':
+        return 'IP';
       default:
         return 'REDACTED';
     }
@@ -161,15 +192,35 @@ export class Redactor {
    */
   getTypeLabel(type) {
     const labels = {
-      'EMAIL': 'email',
-      'PHONE': 'phone number',
-      'SSN': 'SSN',
-      'CREDIT_CARD': 'credit card',
-      'API_KEY': 'API key',
-      'JWT': 'token',
-      'IP_ADDRESS': 'IP address',
+      // Individual Names
       'NAME': 'name',
-      'ADDRESS': 'address'
+      // Email addresses and Usernames
+      'EMAIL': 'email',
+      'USERNAME': 'username',
+      // Phone numbers and Fax numbers
+      'PHONE': 'phone number',
+      'FAX': 'fax number',
+      // Physical addresses
+      'ADDRESS': 'address',
+      // Identity Numbers
+      'SSN': 'SSN',
+      'NRIC': 'NRIC',
+      'PASSPORT': 'passport',
+      'DRIVERS_LICENSE': 'driver\'s license',
+      'DRIVER_LICENSE': 'driver\'s license',
+      'ID_NUMBER': 'ID number',
+      // Credentials
+      'PASSWORD': 'password',
+      'SECRET_KEY': 'secret key',
+      'API_KEY': 'API key',
+      'API_TOKEN': 'API token',
+      'JWT': 'token',
+      // Financial Data
+      'CREDIT_CARD': 'credit card',
+      'BANK_ACCOUNT': 'bank account',
+      'IBAN': 'IBAN',
+      // Legacy/Other
+      'IP_ADDRESS': 'IP address'
     };
 
     return labels[type.toUpperCase()] || type.toLowerCase();
