@@ -18,8 +18,8 @@ export class Scraper {
    */
   configureTurndown() {
     // Check if TurndownService is available (from global scope)
-    const Turndown = typeof TurndownService !== 'undefined' 
-      ? TurndownService 
+    const Turndown = typeof TurndownService !== 'undefined'
+      ? TurndownService
       : (typeof window !== 'undefined' ? window.TurndownService : null);
 
     if (!Turndown) {
@@ -69,8 +69,8 @@ export class Scraper {
       }
 
       // Check if Readability is available (from global scope)
-      const ReadabilityClass = typeof Readability !== 'undefined' 
-        ? Readability 
+      const ReadabilityClass = typeof Readability !== 'undefined'
+        ? Readability
         : (typeof window !== 'undefined' ? window.Readability : null);
 
       if (!ReadabilityClass) {
@@ -137,7 +137,8 @@ export class Scraper {
     postElements.forEach(el => el.remove());
 
     const ReadabilityClass = typeof Readability !== 'undefined' ? Readability : (typeof window !== 'undefined' ? window.Readability : null);
-    
+
+
     if (ReadabilityClass) {
       const reader = new ReadabilityClass(documentClone);
       const article = reader.parse();
@@ -241,7 +242,7 @@ export class Scraper {
     logger.info('Using fallback scraping method');
 
     const documentClone = doc.cloneNode(true);
-    
+
     const unwantedSelectors = [
       'script', 'style', 'nav', 'header', 'footer',
       'aside', '.sidebar', '.advertisement', '.cookie-notice'
@@ -263,7 +264,7 @@ export class Scraper {
    */
   cleanMarkdown(markdown) {
     if (!markdown) return '';
-    
+
     return markdown
       .replace(/\n{3,}/g, '\n\n')
       .replace(/[ \t]+$/gm, '')

@@ -225,7 +225,7 @@ Be precise and conservative - only flag clear PII, not generic terms.`;
       },
       {
         type: 'API_KEY',
-        regex: /\b(?:api[_-]?key|apikey|access[_-]?token|secret[_-]?key)[\s:=]+['"]?([a-zA-Z0-9_\-]{16,})['"]?/gi
+        regex: /\b(?:api[_-]?key|apikey|access[_-]?token|secret[_-]?key)[\s:=]+['"]?([a-zA-Z0-9_-]{16,})['"]?/gi
       },
       {
         type: 'JWT',

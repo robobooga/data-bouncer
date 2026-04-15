@@ -43,6 +43,7 @@ class SettingsController {
       backButton: document.getElementById('backButton'),
       enablePIIDetection: document.getElementById('enablePIIDetection'),
       detectionMode: document.getElementById('detectionMode'),
+      includeSourceUrl: document.getElementById('includeSourceUrl'),
       experimentalPhoneNumber: document.getElementById('experimentalPhoneNumber'),
       storageUsed: document.getElementById('storageUsed'),
       clearAllButton: document.getElementById('clearAllButton')
@@ -65,6 +66,10 @@ class SettingsController {
       this.updateSetting('detectionMode', e.target.value);
     });
 
+    this.elements.includeSourceUrl.addEventListener('change', (e) => {
+      this.updateSetting('includeSourceUrl', e.target.checked);
+    });
+
     this.elements.experimentalPhoneNumber.addEventListener('change', (e) => {
       this.updateExperimentalDataType('phoneNumber', e.target.checked);
     });
@@ -83,6 +88,7 @@ class SettingsController {
       // Set form values
       this.elements.enablePIIDetection.checked = this.currentSettings.enablePIIDetection;
       this.elements.detectionMode.value = this.currentSettings.detectionMode;
+      this.elements.includeSourceUrl.checked = this.currentSettings.includeSourceUrl ?? true;
 
       // Experimental data types
       const experimentalSettings = this.currentSettings.experimentalDataTypes || {};

@@ -88,6 +88,7 @@ export class Storage {
       enablePIIDetection: true,
       detectionMode: 'auto', // 'auto', 'regex'
       darkMode: true,
+      includeSourceUrl: true,
       experimentalDataTypes: {
         phoneNumber: false // Disabled by default due to high false positives
       }

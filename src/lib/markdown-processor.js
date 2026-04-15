@@ -16,8 +16,7 @@ export class MarkdownProcessor {
     const {
       preserveCodeBlocks = true,
       removeExcessiveNewlines = true,
-      normalizeHeadings = true,
-      addMetadata = true
+      normalizeHeadings = true
     } = options;
 
     logger.debug('Processing markdown', { length: markdown.length });

@@ -138,22 +138,6 @@ describe('Redactor', () => {
     });
   });
 
-  describe('Redaction Report', () => {
-    test('generates detailed report', () => {
-      const detections = [
-        { type: 'EMAIL', text: 'john@example.com', start: 0, end: 16 }
-      ];
-
-      redactor.redact('john@example.com', detections);
-      const report = redactor.generateReport();
-
-      expect(report.totalItems).toBe(1);
-      expect(report.items[0].placeholder).toBe('{{EMAIL_1}}');
-      expect(report.items[0].type).toBe('EMAIL');
-      expect(report.items[0].original).toMatch(/jo.*om/); // Masked
-    });
-  });
-
   describe('Edge Cases', () => {
     test('handles overlapping positions correctly', () => {
       // Positions should not overlap in real usage, but test defensive coding

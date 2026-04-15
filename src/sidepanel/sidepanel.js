@@ -187,7 +187,13 @@ class SidePanelUI {
         };
       }
 
-      // Step 4: Update state and UI
+      // Step 4: Append source URL if enabled
+      if (settings.includeSourceUrl && scraped.metadata?.url) {
+        const urlFooter = `\n\n---\n\n**Source:** ${scraped.metadata.url}`;
+        redactionResult.redactedMarkdown += urlFooter;
+      }
+
+      // Step 5: Update state and UI
       this.state.currentMarkdown = scraped.markdown;
       this.state.redactedMarkdown = redactionResult.redactedMarkdown;
       this.state.redactionStats = redactionResult.stats;

@@ -6,8 +6,8 @@
   try {
     const src = chrome.runtime.getURL('src/content/content-script.js');
     await import(src);
-    console.log('[Bouncer] Content script loader completed');
   } catch (error) {
+    // Keep console.error for critical loader failures since Logger may not be available
     console.error('[Bouncer] Failed to load content script:', error);
     console.error('[Bouncer] Error details:', {
       message: error.message,

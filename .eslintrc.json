@@ -20,6 +20,8 @@
     "eol-last": ["error", "always"]
   },
   "globals": {
-    "chrome": "readonly"
+    "chrome": "readonly",
+    "TurndownService": "readonly",
+    "Readability": "readonly"
   }
 }

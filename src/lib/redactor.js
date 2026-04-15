@@ -97,7 +97,7 @@ export class Redactor {
   /**
    * Get appropriate placeholder type based on detection type
    */
-  getPlaceholderType(type, text) {
+  getPlaceholderType(type, _text) {
     switch (type.toUpperCase()) {
       case 'EMAIL':
         return 'EMAIL';

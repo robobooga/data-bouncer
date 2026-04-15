@@ -5,8 +5,10 @@
  */
 
 import { Scraper } from '../lib/scraper.js';
+import { Logger } from '../utils/logger.js';
 
 const scraper = new Scraper();
+const logger = new Logger('ContentScript');
 
 // Listen for messages from side panel or background
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -20,7 +22,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     handleScrapeRequest()
       .then(sendResponse)
       .catch(error => {
-        console.error('[Bouncer] Scraping failed:', error);
+        logger.error('Scraping failed', { error: error.message, stack: error.stack });
         sendResponse({
           success: false,
           error: error.message || 'Scraping failed'
@@ -36,7 +38,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
  */
 async function handleScrapeRequest() {
   try {
-    console.log('[Bouncer] Starting content scrape');
+    logger.info('Starting content scrape');
 
     // Extract metadata
     const metadata = extractMetadata();
@@ -49,7 +51,7 @@ async function handleScrapeRequest() {
       throw new Error('Failed to extract content from page');
     }
 
-    console.log('[Bouncer] Content scraped successfully', markdown.length, 'chars');
+    logger.info('Content scraped successfully', { length: markdown.length });
 
     return {
       success: true,
@@ -60,7 +62,7 @@ async function handleScrapeRequest() {
       }
     };
   } catch (error) {
-    console.error('[Bouncer] Scrape error:', error);
+    logger.error('Scrape error', { error: error.message, stack: error.stack });
     throw error;
   }
 }
@@ -88,4 +90,4 @@ function getMetaContent(name) {
   return meta?.content || null;
 }
 
-console.log('[Bouncer] Content script module loaded');
+logger.info('Content script module loaded');
