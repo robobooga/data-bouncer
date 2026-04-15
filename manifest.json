@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Data Bouncer - AI Data Gatekeeper",
+  "name": "Data Bouncer: Secure Markdown Converter",
   "version": "0.1.0",
-  "description": "Security-first web scraper that redacts PII before you paste into LLMs",
+  "description": "Security-first web scraper that redacts sensitive information before you paste into LLMs",
   "permissions": [
     "activeTab",
     "tabs",
