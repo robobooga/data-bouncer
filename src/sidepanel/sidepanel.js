@@ -38,6 +38,9 @@ class SidePanelUI {
     // Set up event listeners
     this.setupEventListeners();
 
+    // Load and display version
+    this.displayVersion();
+
     // Load current tab info
     await this.loadCurrentTab();
 
@@ -77,7 +80,8 @@ class SidePanelUI {
       redactionDetails: document.getElementById('redactionDetails'),
       detailsToggle: document.getElementById('detailsToggle'),
       detailsContent: document.getElementById('detailsContent'),
-      redactedList: document.getElementById('redactedList')
+      redactedList: document.getElementById('redactedList'),
+      versionInfo: document.querySelector('.version-info')
     };
   }
 
@@ -132,6 +136,16 @@ class SidePanelUI {
     } catch (error) {
       logger.error('Failed to load current tab', error);
       this.setStatus('error', 'Failed to load page info');
+    }
+  }
+
+  /**
+   * Display extension version from manifest
+   */
+  displayVersion() {
+    const manifest = chrome.runtime.getManifest();
+    if (this.elements.versionInfo && manifest.version) {
+      this.elements.versionInfo.textContent = `v${manifest.version}`;
     }
   }
 

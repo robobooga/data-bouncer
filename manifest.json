@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Data Bouncer: Secure Markdown Converter",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Security-first web scraper that redacts sensitive information before you paste into LLMs",
   "permissions": [
     "activeTab",
@@ -32,7 +32,7 @@
     "default_path": "src/sidepanel/sidepanel.html"
   },
   "action": {
-    "default_title": "Bouncer - No PII Allowed",
+    "default_title": "Data Bouncer - No PII Allowed",
     "default_icon": {
       "16": "assets/icons/icon-16.png",
       "32": "assets/icons/icon-32.png",

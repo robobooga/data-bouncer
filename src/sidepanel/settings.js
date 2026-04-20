@@ -26,6 +26,9 @@ class SettingsController {
     // Set up event listeners
     this.setupEventListeners();
 
+    // Display version from manifest
+    this.displayVersion();
+
     // Load current settings
     await this.loadSettings();
 
@@ -45,7 +48,8 @@ class SettingsController {
       detectionMode: document.getElementById('detectionMode'),
       includeSourceUrl: document.getElementById('includeSourceUrl'),
       storageUsed: document.getElementById('storageUsed'),
-      clearAllButton: document.getElementById('clearAllButton')
+      clearAllButton: document.getElementById('clearAllButton'),
+      versionInfo: document.querySelector('.about-value')
     };
 
     // Cache all data type checkboxes
@@ -123,6 +127,16 @@ class SettingsController {
 
     // Clear all data button
     this.elements.clearAllButton.addEventListener('click', () => this.handleClearAll());
+  }
+
+  /**
+   * Display extension version from manifest
+   */
+  displayVersion() {
+    const manifest = chrome.runtime.getManifest();
+    if (this.elements.versionInfo && manifest.version) {
+      this.elements.versionInfo.textContent = manifest.version;
+    }
   }
 
   /**
