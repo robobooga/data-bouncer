@@ -4,11 +4,12 @@ A security-first Chrome Extension that acts as a "Data Firewall" between the web
 
 ## Features
 
-- **🔒 Local-First PII Detection**: Uses Chrome's LanguageModel API (Gemini Nano) with regex fallback
+- **🔒 Comprehensive PII Detection**: 40+ data types across 5 categories (contact, identity, financial, credentials, network)
+- **🎛️ Granular Control**: Enable/disable specific data types (emails, SSNs, API keys, crypto addresses, etc.)
 - **📝 Clean Markdown Conversion**: Readability.js + Turndown for LLM-ready content
-- **🎯 Smart Placeholders**: Replaces sensitive data with descriptive tags ({{EMAIL_1}}, {{NAME_1}})
-- **⚡ Zero Network Calls**: All processing happens on-device
-- **🎨 Professional UI**: Dark mode side panel interface
+- **🎯 Smart Placeholders**: Replaces sensitive data with descriptive tags ({{EMAIL_1}}, {{API_KEY_2}}, {{BITCOIN_1}})
+- **⚡ Zero Network Calls**: All processing happens on-device using Chrome's LanguageModel API (Gemini Nano)
+- **🎨 Professional UI**: Dark mode side panel interface with settings management
 
 ## Tech Stack
 
@@ -73,7 +74,7 @@ If you just have the source code and want to run the extension:
 4. Use the extension:
    - Click the Bouncer extension icon in your toolbar
    - The side panel will open
-   - Click "Scrape & Protect" to extract and redact page content
+   - Click "Convert" to extract and redact page content
 
 ### Development Tools (Optional)
 
@@ -137,17 +138,18 @@ This will:
 
 **Message Flow:**
 1. User clicks extension icon → Opens side panel
-2. User clicks "Convert" → Side panel sends `SCRAPE_CONTENT` message directly to content script
+2. User clicks "Convert" → Side panel sends `SCRAPE_CONTENT` message to content script
 3. Content script uses Scraper (Readability.js + Turndown) to extract and convert page to markdown
 4. Content script returns markdown to side panel
-5. Side panel uses PIIDetector to analyze markdown (Gemini Nano or regex fallback)
-6. Side panel uses Redactor to replace detected PII with smart placeholders
-7. User copies redacted markdown to clipboard or downloads as .md file
+5. **PII Detection**: Regex-based detection with 40+ patterns (AI detection reserved for future use)
+6. **Redaction**: Replace detected PII with smart placeholders based on user-configured data types
+7. User copies final redacted markdown to clipboard
 
 **Key Principles:**
 - **Separation of Concerns**: Each module has a single responsibility
 - **Local-First**: Zero external API calls
-- **Graceful Degradation**: Falls back to regex if AI unavailable
+- **Granular Control**: User-configurable data type detection
+- **Validated Detection**: Checksums for credit cards (Luhn), routing numbers, Canadian SIN, VINs
 - **Type Safety**: Clear interfaces between modules
 - **Logging**: Comprehensive logging for debugging
 

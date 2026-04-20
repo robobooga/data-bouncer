@@ -107,7 +107,7 @@ export class Storage {
       dataTypes: {
         // Contact Information
         email: true,
-        phone: false,        // Experimental: high false positives
+        phone: true,         // Improved pattern with format validation
         fax: true,
 
         // Personal Identity
@@ -124,7 +124,7 @@ export class Storage {
         dateOfBirth: true,
 
         // Location
-        address: false,      // Experimental: high false positives
+        address: true,       // Now handles multi-word cities
         ipAddress: true,
         ipv6Address: true,
         macAddress: true,

@@ -17,18 +17,21 @@ export class Redactor {
    * Redact PII from markdown based on detections
    * @param {string} markdown - Original markdown
    * @param {Array} detections - PII detections from PIIDetector
+   * @param {boolean} preserveState - If true, don't reset counters (for incremental redaction)
    * @returns {Object} { redactedMarkdown, redactionMap, stats }
    */
-  redact(markdown, detections) {
-    // Reset state first (before early return to clear previous counts)
-    this.redactionMap = new Map();
-    this.counters = {};
+  redact(markdown, detections, preserveState = false) {
+    // Reset state (unless preserving for incremental redaction)
+    if (!preserveState) {
+      this.redactionMap = new Map();
+      this.counters = {};
+    }
 
     if (!detections || detections.length === 0) {
       return {
         redactedMarkdown: markdown,
-        redactionMap: new Map(),
-        stats: { totalRedacted: 0, byType: {} }
+        redactionMap: this.redactionMap, // Return current map (may have previous redactions)
+        stats: this.calculateStats()
       };
     }
 

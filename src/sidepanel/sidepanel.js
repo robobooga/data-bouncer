@@ -163,21 +163,35 @@ class SidePanelUI {
 
       // Step 2-3: Detect and redact PII only if enabled
       if (settings.enablePIIDetection) {
-        this.setStatus('processing', 'Analyzing content...');
+        // Pass 1: Detect with regex
+        this.setStatus('processing', 'Detecting PII (regex)...');
+        const regexDetections = this.piiDetector.detectWithRegex(scraped.markdown, settings);
 
-        // Step 2: Detect PII (pass settings for experimental data types)
-        const detectionResult = await this.piiDetector.detectPII(scraped.markdown, settings);
+        // Pass 1: Redact based on regex
+        this.setStatus('processing', 'Redacting structured data...');
+        const firstPassResult = this.redactor.redact(scraped.markdown, regexDetections);
 
-        this.setStatus('processing', 'Redacting sensitive data...');
+        let secondPassResult = null;
+        let totalRedacted = regexDetections.length;
 
-        // Step 3: Redact PII
-        redactionResult = this.redactor.redact(
-          scraped.markdown,
-          detectionResult.detections
-        );
+        // Pass 2: Detect stragglers with AI (if available)
+        if (await this.piiDetector.isAIAvailable()) {
+          this.setStatus('processing', 'Detecting stragglers (AI)...');
+          const aiDetections = await this.piiDetector.detectWithAI(firstPassResult.redactedMarkdown);
+
+          if (aiDetections.length > 0) {
+            this.setStatus('processing', 'Redacting stragglers...');
+            secondPassResult = this.redactor.redact(firstPassResult.redactedMarkdown, aiDetections, true);
+            totalRedacted += aiDetections.length;
+          }
+        }
+
+        // Use final result
+        redactionResult = secondPassResult || firstPassResult;
+        redactionResult.stats.totalRedacted = totalRedacted; // Override total count
 
         // Update statistics
-        await Storage.incrementStats('itemsRedacted', redactionResult.stats.totalRedacted);
+        await Storage.incrementStats('itemsRedacted', totalRedacted);
       } else {
         // PII detection disabled - use original markdown as-is
         redactionResult = {

@@ -274,17 +274,52 @@ describe('PIIDetector', () => {
       expect(passwords).toHaveLength(1);
     });
 
+    test('detects passwords with backticks (markdown code formatting)', async () => {
+      const text = 'Root Password: `admin_pass_2026_!#`';
+      const result = await detector.detectPII(text);
+
+      const passwords = result.detections.filter(d => d.type === 'PASSWORD');
+      expect(passwords.length).toBeGreaterThanOrEqual(1);
+    });
+
+    test('detects passwords in bold markdown with backticks', async () => {
+      const text = '**Root Password:** `admin_pass_2026_!#`';
+      const result = await detector.detectPII(text);
+
+      const passwords = result.detections.filter(d => d.type === 'PASSWORD');
+      expect(passwords.length).toBeGreaterThanOrEqual(1);
+    });
+
     test('detects various password formats', async () => {
       const texts = [
         'password: "mySecretPass123"',
         'passwd=super_secure_pwd',
-        'secret: gig_access_2026!'
+        'secret: gig_access_2026!',
+        'pwd: `test_Pass_123`'
       ];
 
       for (const text of texts) {
         const result = await detector.detectPII(text);
         const passwords = result.detections.filter(d => d.type === 'PASSWORD');
         expect(passwords.length).toBeGreaterThan(0);
+      }
+    });
+
+    test('does not detect emails as passwords', async () => {
+      const texts = [
+        'Billing Contact: `billing@phoenix.io`',
+        'Email: `sarah.jenkins@company.com`',
+        'Contact: `user@example.org`'
+      ];
+
+      for (const text of texts) {
+        const result = await detector.detectPII(text);
+        const passwords = result.detections.filter(d => d.type === 'PASSWORD');
+        expect(passwords).toHaveLength(0);
+
+        // Should still detect as EMAIL
+        const emails = result.detections.filter(d => d.type === 'EMAIL');
+        expect(emails.length).toBeGreaterThan(0);
       }
     });
   });
@@ -811,6 +846,92 @@ MHcCAQEEIAbcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ123456
         const dobDetections = result.detections.filter(d => d.type === 'DATE_OF_BIRTH');
         expect(dobDetections.length).toBeGreaterThan(0);
       }
+    });
+  });
+
+  describe('User-Provided Wiki Test Case', () => {
+    test('detects passwords and cards in wiki-style document with markdown formatting', async () => {
+      const wikiDoc = `[INTERNAL ONLY] Project Phoenix: Q2 Onboarding
+
+Project Lead: Sarah Jenkins
+Contact: sarah.jenkins@phoenix.io | Ext: (415) 555-0912
+
+#### 1. New Hire Status (Confidential)
+
+The following contractors require immediate access to the Austin staging environment. Please verify their government IDs before issuing badges.
+
+*   Contractor: Robert "Bobby" Chen
+    *   Home Address: 442 West Oak Street, Austin, TX 78701
+    *   NRIC/ID: S9823411Z
+    *   SSN: 666-12-XXXX (Last 4: 9901)
+    *   Passport: A22904431
+
+*   Contractor: Amara Okafor
+    *   Mobile: +1 (650) 555-0144
+    *   Personal Email: amara.okafor@personal.com
+
+#### 2. Staging Environment Credentials
+
+Note: Do not share these outside the #dev-ops Slack channel. We are migrating to a vault next month.
+
+*   Master API Endpoint: https://api.staging.phoenix.io/v1/
+*   Secret Key: sk_prod_51Nzh2LKH6fGqX9Wz8vQ0j3P188mQ
+*   Root Password: admin_pass_2026_!#
+*   AWS Token: AKIA234567890EXAMPLE
+
+#### 3. Billing & Vendor Payments
+
+The Q2 hardware refresh has been charged to the corporate travel card. Please reconcile these against the Chase Business Account.
+
+*   Primary Card: 4111 1111 1111 1111 (Exp: 08/28)
+*   Vendor IBAN: DE89 3704 0044 0532 0130 00
+*   Billing Contact: billing@phoenix.io
+*   Fax: (512) 555-0199`;
+
+      const settings = {
+        dataTypes: {
+          name: true,
+          address: true,
+          phone: true
+        }
+      };
+
+      const result = await detector.detectPII(wikiDoc, settings);
+
+      // Critical: Must detect passwords and credit cards
+      const passwords = result.detections.filter(d => d.type === 'PASSWORD');
+      expect(passwords.length).toBeGreaterThanOrEqual(1); // admin_pass_2026_!#
+
+      const cards = result.detections.filter(d => d.type === 'CREDIT_CARD');
+      expect(cards.length).toBeGreaterThanOrEqual(1); // 4111 1111 1111 1111
+
+      // Other PII
+      const emails = result.detections.filter(d => d.type === 'EMAIL');
+      expect(emails.length).toBeGreaterThanOrEqual(2);
+
+      const apiKeys = result.detections.filter(d => d.type === 'API_KEY');
+      expect(apiKeys.length).toBeGreaterThanOrEqual(2);
+
+      const phones = result.detections.filter(d => d.type === 'PHONE');
+      expect(phones.length).toBeGreaterThanOrEqual(2);
+
+      const nrics = result.detections.filter(d => d.type === 'NRIC');
+      expect(nrics.length).toBeGreaterThanOrEqual(1);
+
+      const passports = result.detections.filter(d => d.type === 'PASSPORT');
+      expect(passports.length).toBeGreaterThanOrEqual(1);
+
+      const ibans = result.detections.filter(d => d.type === 'IBAN');
+      expect(ibans.length).toBeGreaterThanOrEqual(1);
+
+      const faxes = result.detections.filter(d => d.type === 'FAX');
+      expect(faxes.length).toBeGreaterThanOrEqual(1);
+
+      const addresses = result.detections.filter(d => d.type === 'ADDRESS');
+      expect(addresses.length).toBeGreaterThanOrEqual(1);
+
+      const names = result.detections.filter(d => d.type === 'NAME');
+      expect(names.length).toBeGreaterThanOrEqual(2);
     });
   });
 

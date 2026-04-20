@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-**Bouncer**: MV3 Chrome extension — scrape web→clean MD + local AI PII redaction. Value prop: ONLY web scraper with built-in on-device PII protection.
+**Data Bouncer**: MV3 Chrome extension — scrape web→clean MD + local AI PII redaction. Value prop: ONLY web scraper with built-in on-device PII protection.
 
 ## Living Rules
 - Absolutely no collection of data from the user. All user data stays with them.
@@ -18,30 +18,33 @@ npm run lint|format|test|dev
 
 ## Architecture
 
-**Principles**: Local-first (zero network) • Separation of concerns • AI→regex fallback • Zero-knowledge • Modular
+**Principles**: Local-first • Zero network • Modular • User control
 
 **Components**:
-- `src/background/service-worker.js` — Lifecycle, message routing, NO business logic
-- `src/content/content-script.js` — DOM extraction, delegates to Scraper
-- `src/lib/scraper.js` — Readability.js + Turndown (HTML→MD)
-- `src/lib/pii-detector.js` — Chrome LanguageModel (Gemini Nano) w/ regex fallback
-- `src/lib/redactor.js` — Smart placeholders (`{{EMAIL_1}}`), audit trail
-- `src/sidepanel/*` — UI workflow orchestration
-- `src/utils/*` — Logger (no console.log), Storage wrapper
+- `src/background/service-worker.js` — Message routing only
+- `src/content/content-script.js` — DOM extraction via Scraper
+- `src/lib/scraper.js` — Readability.js + Turndown
+- `src/lib/pii-detector.js` — 40+ regex patterns w/ validators (Luhn, checksums)
+- `src/lib/redactor.js` — Smart placeholders (`{{EMAIL_1}}`), counters by type
+- `src/sidepanel/` — UI + Settings (granular data type toggles)
+- `src/utils/` — Logger, Storage (settings + stats)
 
-**Message Flow**: Icon click → sidePanel.open() → "Scrape & Protect" → sendMessage(SCRAPE_CONTENT) → content-script → Scraper.scrapeToMarkdown() → PIIDetector.detectPII() → Redactor.redact() → clipboard
-
-**Modules**: ES6 imports (`import { Class } from './file.js'`), all `type="module"` in manifest
+**Flow**: Icon → Panel → "Convert" → content-script → Scraper → PIIDetector (regex) → Redactor → clipboard
 
 ## Implementation
 
-**PII Detection**: Check `window.ai.languageModel` → Gemini Nano w/ system prompt OR regex patterns → validate (Luhn for CC, etc.)
+**PII Detection**: 40+ regex patterns grouped by category (contact, identity, financial, credentials, network). User configures enabled types via `settings.dataTypes`. Validators for checksums (Luhn, routing numbers, SIN).
 
-**Smart Placeholders**: `{{EMAIL_1}}`, `{{API_KEY_2}}` (sequential, preserves LLM context vs black bars)
+**Data Type Categories**:
+- Contact: email, phone, fax
+- Identity: SSN, SIN, UK NINO, NRIC, passport, driver's license, medicare, tax ID, VIN, DOB
+- Financial: credit card, CVV, bank account, routing number, IBAN
+- Credentials: password, API keys, GitHub/OAuth/JWT tokens, SSH keys, DB connections
+- Network/Crypto: IP (v4/v6), MAC, Bitcoin, Ethereum
 
-**Storage**: `chrome.storage.local` only — session data, settings, stats, dev logs (last 100)
+**Storage**: `chrome.storage.local` — settings (w/ dataTypes object), stats, dev logs
 
-**MV3 Gotchas**: Service workers not bg pages • ES modules work • Content scripts can't access `window.ai` • Side Panel API Chrome 114+ • LanguageModel API Chrome 138+ Dev/Canary w/ flags
+**MV3 Notes**: Service workers • ES modules • Side Panel API Chrome 114+
 
 ## Code Style
 
@@ -66,9 +69,8 @@ npm run lint|format|test|dev
 - **V2**: Web Store optimization, advanced regex, preview mode, settings panel
 
 ## Common Tasks
-**Add PII pattern**: `PIIDetector.getRegexPatterns()` + validator + `Redactor.getPlaceholderType()` + tests
-**Modify MD output**: `Scraper.configureTurndown()` + custom rules
-**Add setting**: `Storage.getDefaultSettings()` + `sidepanel.html` + `sidepanel.js` + modules
+**Add PII pattern**: Edit `PIIDetector.getRegexPatterns()` (add to dataTypes check) + optional validator + `Redactor.getPlaceholderType()` + `Storage.getDefaultSettings().dataTypes` + settings UI
+**Add setting**: `Storage.getDefaultSettings()` + settings.html checkbox + `settings.js` event handler
 
 ## Limitations
 Chrome 138+ Dev/Canary (LanguageModel) • Single-tab V1 • Clipboard-only V1 • English PII only • Desktop Chrome only

@@ -142,7 +142,7 @@ class SettingsController {
       Object.entries(this.dataTypeElements).forEach(([key, element]) => {
         if (element) {
           // If not explicitly set, use true as default (except experimental which default to false)
-          const isExperimental = ['phone', 'name', 'address'].includes(key);
+          const isExperimental = ['name'].includes(key); // address and phone now stable
           const defaultValue = !isExperimental;
           element.checked = dataTypes[key] ?? defaultValue;
         }

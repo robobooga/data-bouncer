@@ -28,7 +28,7 @@ export class PIIDetector {
         logger.info('LanguageModel API available, initializing...');
         this.languageModel = await this.initializeLanguageModel();
         this.detectionMode = 'ai';
-        logger.info('AI-powered PII detection enabled');
+        logger.info('Two-pass detection available (regex + AI)');
       } else {
         logger.warn('LanguageModel API not available, using regex fallback');
         this.detectionMode = 'regex';
@@ -39,6 +39,15 @@ export class PIIDetector {
     }
 
     this.initialized = true;
+  }
+
+  /**
+   * Check if AI detection is available
+   * @returns {Promise<boolean>}
+   */
+  async isAIAvailable() {
+    await this.initialize();
+    return this.detectionMode === 'ai' && this.languageModel !== null;
   }
 
   /**
@@ -254,7 +263,7 @@ Be precise and conservative - only flag clear PII, not generic terms.`;
     if (dataTypes.address === true) {
       patterns.push({
         type: 'ADDRESS',
-        regex: /\b\d{1,5}\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\s+(?:Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Drive|Dr|Lane|Ln|Way|Court|Ct),?\s+[A-Z][a-z]+,?\s+[A-Z]{2}\s+\d{5}\b/g
+        regex: /\b\d{1,5}\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\s+(?:Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Drive|Dr|Lane|Ln|Way|Court|Ct),?\s+(?:[A-Z][a-z]+\s*)+,?\s+[A-Z]{2}\s+\d{5}(?:-\d{4})?\b/g
       });
     }
     // Social Security Numbers (US)
@@ -338,12 +347,15 @@ Be precise and conservative - only flag clear PII, not generic terms.`;
       });
     }
 
-    // Credit card numbers (with Luhn validation)
+    // Credit card numbers (with optional Luhn validation)
     if (dataTypes.creditCard !== false) {
       patterns.push({
         type: 'CREDIT_CARD',
         regex: /\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{3,4}\b/g,
-        validator: (text) => this.validateLuhn(text)
+        // Luhn validation is optional - when false, detects all card-like numbers
+        // This helps catch test cards and typos that still expose sensitive patterns
+        validator: settings.strictCreditCardValidation !== false ?
+          (text) => this.validateLuhn(text) : null
       });
     }
 
@@ -420,7 +432,13 @@ Be precise and conservative - only flag clear PII, not generic terms.`;
     if (dataTypes.password !== false) {
       patterns.push({
         type: 'PASSWORD',
-        regex: /\b(?:password|passwd|pwd|secret)[\s:=]+['"]?([^\s'"]{8,})['"]?/gi
+        // Password with label (handles quotes, backticks, and markdown formatting)
+        // Requires explicit label to avoid false positives
+        regex: /\b(?:password|passwd|pwd|secret)[\s:=*_]+[`'"]?([^\s`'"@]{8,})[`'"]?/gi,
+        validator: (text) => {
+          // Exclude email addresses (they have their own detection)
+          return !/@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/.test(text);
+        }
       });
     }
 
