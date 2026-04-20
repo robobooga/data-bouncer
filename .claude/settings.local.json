@@ -10,7 +10,8 @@
       "Bash(find src/ -type f -exec wc -c {} +)",
       "Bash(find vendor/ -type f -exec wc -c {} +)",
       "Bash(npm ls:*)",
-      "Bash(git count-objects:*)"
+      "Bash(git count-objects:*)",
+      "Bash(node *)"
     ]
   }
 }

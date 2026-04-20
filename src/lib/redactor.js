@@ -118,6 +118,10 @@ export class Redactor {
       // Identity Numbers
       case 'SSN':
         return 'SSN';
+      case 'SIN':
+        return 'SIN';
+      case 'UK_NINO':
+        return 'UK_NINO';
       case 'NRIC':
         return 'NRIC';
       case 'PASSPORT':
@@ -127,6 +131,14 @@ export class Redactor {
         return 'DRIVERS_LICENSE';
       case 'ID_NUMBER':
         return 'ID_NUMBER';
+      case 'MEDICARE':
+        return 'MEDICARE';
+      case 'TAX_ID':
+        return 'TAX_ID';
+      case 'VIN':
+        return 'VIN';
+      case 'DATE_OF_BIRTH':
+        return 'DOB';
       // Credentials
       case 'PASSWORD':
         return 'PASSWORD';
@@ -138,16 +150,39 @@ export class Redactor {
         return 'API_TOKEN';
       case 'JWT':
         return 'TOKEN';
+      case 'GITHUB_TOKEN':
+        return 'GITHUB_TOKEN';
+      case 'OAUTH_TOKEN':
+        return 'OAUTH_TOKEN';
+      case 'SSH_KEY':
+        return 'SSH_KEY';
       // Financial Data
       case 'CREDIT_CARD':
         return 'CARD';
+      case 'CVV':
+        return 'CVV';
       case 'BANK_ACCOUNT':
         return 'BANK_ACCOUNT';
+      case 'ROUTING_NUMBER':
+        return 'ROUTING_NUMBER';
       case 'IBAN':
         return 'IBAN';
-      // Legacy/Other
+      // Technical / Network
       case 'IP_ADDRESS':
         return 'IP';
+      case 'IPV6_ADDRESS':
+        return 'IPV6';
+      case 'MAC_ADDRESS':
+        return 'MAC';
+      case 'DB_CONNECTION':
+        return 'DB_CONNECTION';
+      case 'URL_WITH_SECRET':
+        return 'URL';
+      // Cryptocurrency
+      case 'BITCOIN_ADDRESS':
+        return 'BITCOIN';
+      case 'ETHEREUM_ADDRESS':
+        return 'ETHEREUM';
       default:
         return 'REDACTED';
     }
@@ -204,23 +239,41 @@ export class Redactor {
       'ADDRESS': 'address',
       // Identity Numbers
       'SSN': 'SSN',
+      'SIN': 'SIN',
+      'UK_NINO': 'UK NI Number',
       'NRIC': 'NRIC',
       'PASSPORT': 'passport',
       'DRIVERS_LICENSE': 'driver\'s license',
       'DRIVER_LICENSE': 'driver\'s license',
       'ID_NUMBER': 'ID number',
+      'MEDICARE': 'Medicare number',
+      'TAX_ID': 'Tax ID',
+      'VIN': 'VIN',
+      'DATE_OF_BIRTH': 'date of birth',
       // Credentials
       'PASSWORD': 'password',
       'SECRET_KEY': 'secret key',
       'API_KEY': 'API key',
       'API_TOKEN': 'API token',
       'JWT': 'token',
+      'GITHUB_TOKEN': 'GitHub token',
+      'OAUTH_TOKEN': 'OAuth token',
+      'SSH_KEY': 'SSH key',
       // Financial Data
       'CREDIT_CARD': 'credit card',
+      'CVV': 'CVV',
       'BANK_ACCOUNT': 'bank account',
+      'ROUTING_NUMBER': 'routing number',
       'IBAN': 'IBAN',
-      // Legacy/Other
-      'IP_ADDRESS': 'IP address'
+      // Technical / Network
+      'IP_ADDRESS': 'IP address',
+      'IPV6_ADDRESS': 'IPv6 address',
+      'MAC_ADDRESS': 'MAC address',
+      'DB_CONNECTION': 'database connection',
+      'URL_WITH_SECRET': 'URL with secret',
+      // Cryptocurrency
+      'BITCOIN_ADDRESS': 'Bitcoin address',
+      'ETHEREUM_ADDRESS': 'Ethereum address'
     };
 
     return labels[type.toUpperCase()] || type.toLowerCase();

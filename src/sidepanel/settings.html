@@ -53,25 +53,444 @@
         </div>
       </section>
 
-      <!-- Experimental Data Types Section -->
+      <!-- Data Types Section -->
       <section class="settings-section">
-        <h2 class="section-title">Experimental Data Types</h2>
+        <h2 class="section-title">Data Types to Detect</h2>
         <p class="section-description">
-          These data types may produce false positives. Enable only if needed.
+          Control which types of sensitive data to detect. Experimental types (⚠️) may produce false positives.
         </p>
-      
-        <div class="setting-item">
-          <div class="setting-info">
-            <div class="setting-label">Phone Number Detection</div>
-            <div class="setting-description">Detect phone numbers (may flag dates, IDs, and other numeric patterns)</div>
+
+        <!-- Contact Information -->
+        <details class="data-type-group" open>
+          <summary class="group-header">Contact Information</summary>
+          <div class="group-content">
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">Email Addresses</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_email">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">Phone Numbers <span class="badge-experimental">⚠️ Experimental</span></div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_phone">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">Fax Numbers</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_fax">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
           </div>
-          <div class="setting-control">
-            <label class="toggle-switch">
-              <input type="checkbox" id="experimentalPhoneNumber">
-              <span class="toggle-slider"></span>
-            </label>
+        </details>
+
+        <!-- Personal Identity -->
+        <details class="data-type-group">
+          <summary class="group-header">Personal Identity</summary>
+          <div class="group-content">
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">Names <span class="badge-experimental">⚠️ Experimental</span></div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_name">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">Social Security Numbers (US)</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_ssn">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">Social Insurance Numbers (Canada)</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_sin">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">National Insurance Numbers (UK)</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_ukNino">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">NRIC (Singapore)</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_nric">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">Passport Numbers</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_passport">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">Driver's Licenses</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_driversLicense">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">Medicare Numbers</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_medicare">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">Tax IDs / EINs</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_taxId">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">Vehicle VINs</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_vin">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">Dates of Birth</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_dateOfBirth">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
           </div>
-        </div>
+        </details>
+
+        <!-- Location -->
+        <details class="data-type-group">
+          <summary class="group-header">Location & Network</summary>
+          <div class="group-content">
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">Street Addresses <span class="badge-experimental">⚠️ Experimental</span></div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_address">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">IP Addresses</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_ipAddress">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">IPv6 Addresses</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_ipv6Address">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">MAC Addresses</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_macAddress">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <!-- Financial -->
+        <details class="data-type-group">
+          <summary class="group-header">Financial Data</summary>
+          <div class="group-content">
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">Credit Card Numbers</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_creditCard">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">CVV/CVC Codes</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_cvv">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">Bank Account Numbers</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_bankAccount">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">Routing Numbers</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_routingNumber">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">IBAN</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_iban">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <!-- Credentials & Secrets -->
+        <details class="data-type-group">
+          <summary class="group-header">Credentials & Secrets</summary>
+          <div class="group-content">
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">Passwords</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_password">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">API Keys</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_apiKey">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">GitHub Tokens</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_githubToken">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">OAuth Tokens</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_oauthToken">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">JWT Tokens</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_jwt">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">SSH Private Keys</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_sshKey">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">Database Connection Strings</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_dbConnection">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">URLs with Secrets</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_urlWithSecret">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <!-- Cryptocurrency -->
+        <details class="data-type-group">
+          <summary class="group-header">Cryptocurrency</summary>
+          <div class="group-content">
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">Bitcoin Addresses</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_bitcoinAddress">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="setting-item-compact">
+              <div class="setting-info">
+                <div class="setting-label">Ethereum Addresses</div>
+              </div>
+              <div class="setting-control">
+                <label class="toggle-switch">
+                  <input type="checkbox" id="dataType_ethereumAddress">
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </details>
       </section>
 
       <!-- Output Options Section -->

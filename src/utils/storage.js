@@ -18,13 +18,13 @@ export class Storage {
 
     if (!settings) return defaults;
 
-    // Deep merge for nested objects (experimentalDataTypes)
+    // Deep merge for nested objects (dataTypes)
     return {
       ...defaults,
       ...settings,
-      experimentalDataTypes: {
-        ...defaults.experimentalDataTypes,
-        ...(settings.experimentalDataTypes || {})
+      dataTypes: {
+        ...defaults.dataTypes,
+        ...(settings.dataTypes || {})
       }
     };
   }
@@ -102,8 +102,54 @@ export class Storage {
       detectionMode: 'auto', // 'auto', 'regex'
       darkMode: true,
       includeSourceUrl: true,
-      experimentalDataTypes: {
-        phoneNumber: false // Disabled by default due to high false positives
+
+      // Granular data type controls
+      dataTypes: {
+        // Contact Information
+        email: true,
+        phone: false,        // Experimental: high false positives
+        fax: true,
+
+        // Personal Identity
+        name: false,         // Experimental: high false positives
+        ssn: true,
+        sin: true,
+        ukNino: true,
+        nric: true,
+        passport: true,
+        driversLicense: true,
+        medicare: true,
+        taxId: true,
+        vin: true,
+        dateOfBirth: true,
+
+        // Location
+        address: false,      // Experimental: high false positives
+        ipAddress: true,
+        ipv6Address: true,
+        macAddress: true,
+
+        // Financial
+        creditCard: true,
+        cvv: true,
+        bankAccount: true,
+        routingNumber: true,
+        iban: true,
+
+        // Credentials & Secrets
+        password: true,
+        apiKey: true,
+        secretKey: true,
+        githubToken: true,
+        oauthToken: true,
+        jwt: true,
+        sshKey: true,
+        dbConnection: true,
+        urlWithSecret: true,
+
+        // Cryptocurrency
+        bitcoinAddress: true,
+        ethereumAddress: true
       }
     };
   }

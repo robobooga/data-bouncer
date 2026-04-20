@@ -44,9 +44,51 @@ class SettingsController {
       enablePIIDetection: document.getElementById('enablePIIDetection'),
       detectionMode: document.getElementById('detectionMode'),
       includeSourceUrl: document.getElementById('includeSourceUrl'),
-      experimentalPhoneNumber: document.getElementById('experimentalPhoneNumber'),
       storageUsed: document.getElementById('storageUsed'),
       clearAllButton: document.getElementById('clearAllButton')
+    };
+
+    // Cache all data type checkboxes
+    this.dataTypeElements = {
+      // Contact
+      email: document.getElementById('dataType_email'),
+      phone: document.getElementById('dataType_phone'),
+      fax: document.getElementById('dataType_fax'),
+      // Identity
+      name: document.getElementById('dataType_name'),
+      ssn: document.getElementById('dataType_ssn'),
+      sin: document.getElementById('dataType_sin'),
+      ukNino: document.getElementById('dataType_ukNino'),
+      nric: document.getElementById('dataType_nric'),
+      passport: document.getElementById('dataType_passport'),
+      driversLicense: document.getElementById('dataType_driversLicense'),
+      medicare: document.getElementById('dataType_medicare'),
+      taxId: document.getElementById('dataType_taxId'),
+      vin: document.getElementById('dataType_vin'),
+      dateOfBirth: document.getElementById('dataType_dateOfBirth'),
+      // Location
+      address: document.getElementById('dataType_address'),
+      ipAddress: document.getElementById('dataType_ipAddress'),
+      ipv6Address: document.getElementById('dataType_ipv6Address'),
+      macAddress: document.getElementById('dataType_macAddress'),
+      // Financial
+      creditCard: document.getElementById('dataType_creditCard'),
+      cvv: document.getElementById('dataType_cvv'),
+      bankAccount: document.getElementById('dataType_bankAccount'),
+      routingNumber: document.getElementById('dataType_routingNumber'),
+      iban: document.getElementById('dataType_iban'),
+      // Credentials
+      password: document.getElementById('dataType_password'),
+      apiKey: document.getElementById('dataType_apiKey'),
+      githubToken: document.getElementById('dataType_githubToken'),
+      oauthToken: document.getElementById('dataType_oauthToken'),
+      jwt: document.getElementById('dataType_jwt'),
+      sshKey: document.getElementById('dataType_sshKey'),
+      dbConnection: document.getElementById('dataType_dbConnection'),
+      urlWithSecret: document.getElementById('dataType_urlWithSecret'),
+      // Cryptocurrency
+      bitcoinAddress: document.getElementById('dataType_bitcoinAddress'),
+      ethereumAddress: document.getElementById('dataType_ethereumAddress')
     };
   }
 
@@ -70,8 +112,13 @@ class SettingsController {
       this.updateSetting('includeSourceUrl', e.target.checked);
     });
 
-    this.elements.experimentalPhoneNumber.addEventListener('change', (e) => {
-      this.updateExperimentalDataType('phoneNumber', e.target.checked);
+    // Set up listeners for all data type checkboxes
+    Object.entries(this.dataTypeElements).forEach(([key, element]) => {
+      if (element) {
+        element.addEventListener('change', (e) => {
+          this.updateDataType(key, e.target.checked);
+        });
+      }
     });
 
     // Clear all data button
@@ -90,9 +137,16 @@ class SettingsController {
       this.elements.detectionMode.value = this.currentSettings.detectionMode;
       this.elements.includeSourceUrl.checked = this.currentSettings.includeSourceUrl ?? true;
 
-      // Experimental data types
-      const experimentalSettings = this.currentSettings.experimentalDataTypes || {};
-      this.elements.experimentalPhoneNumber.checked = experimentalSettings.phoneNumber || false;
+      // Load all data type settings
+      const dataTypes = this.currentSettings.dataTypes || {};
+      Object.entries(this.dataTypeElements).forEach(([key, element]) => {
+        if (element) {
+          // If not explicitly set, use true as default (except experimental which default to false)
+          const isExperimental = ['phone', 'name', 'address'].includes(key);
+          const defaultValue = !isExperimental;
+          element.checked = dataTypes[key] ?? defaultValue;
+        }
+      });
 
       logger.info('Settings loaded', this.currentSettings);
     } catch (error) {
@@ -129,21 +183,21 @@ class SettingsController {
   }
 
   /**
-   * Update experimental data type setting
+   * Update data type setting
    */
-  async updateExperimentalDataType(dataType, enabled) {
+  async updateDataType(dataType, enabled) {
     try {
-      const experimentalDataTypes = {
-        ...(this.currentSettings.experimentalDataTypes || {}),
+      const dataTypes = {
+        ...(this.currentSettings.dataTypes || {}),
         [dataType]: enabled
       };
 
-      await Storage.updateSettings({ experimentalDataTypes });
-      this.currentSettings.experimentalDataTypes = experimentalDataTypes;
+      await Storage.updateSettings({ dataTypes });
+      this.currentSettings.dataTypes = dataTypes;
 
-      logger.info('Experimental data type updated', { dataType, enabled });
+      logger.info('Data type updated', { dataType, enabled });
     } catch (error) {
-      logger.error('Failed to update experimental data type', error);
+      logger.error('Failed to update data type', error);
       this.showNotification('Failed to update setting', 'error');
     }
   }
