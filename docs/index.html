@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Bouncer — Web Scraper with Built-In PII Protection</title>
+  <meta name="description" content="The only web scraper that automatically redacts sensitive data before you paste it into AI. Local-first, zero network calls, 40+ PII patterns.">
+  <meta property="og:title" content="Data Bouncer — Web Scraper with Built-In PII Protection">
+  <meta property="og:description" content="Convert any web page to clean Markdown. Emails, API keys, credit cards, SSNs — all redacted before they leave your browser.">
+  <meta property="og:type" content="website">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080c14;
+      --surface: #0f1623;
+      --surface-raised: #161e2e;
+      --border: #1e2a3a;
+      --border-bright: #2a3a52;
+      --text: #cdd9e5;
+      --text-muted: #5a7184;
+      --text-dim: #3d5468;
+      --accent: #7c6af5;
+      --accent-dim: rgba(124, 106, 245, 0.15);
+      --accent-bright: #9d8ff8;
+      --green: #3fb950;
+      --green-dim: rgba(63, 185, 80, 0.12);
+      --red: #f85149;
+      --red-dim: rgba(248, 81, 73, 0.12);
+      --amber: #d29922;
+      --radius: 10px;
+      --radius-sm: 6px;
+      --mono: 'Cascadia Code', 'Fira Code', 'JetBrains Mono', 'Courier New', monospace;
+      --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--accent-bright); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ─── NAV ─────────────────────────────────────────── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 32px;
+      background: rgba(8, 12, 20, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .nav-brand:hover { text-decoration: none; }
+    .nav-brand img { width: 28px; height: 28px; border-radius: 6px; }
+
+    .nav-links { display: flex; align-items: center; gap: 8px; }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      background: transparent;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .btn-ghost:hover {
+      color: var(--text);
+      border-color: var(--border-bright);
+      background: var(--surface);
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #fff;
+      background: var(--accent);
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s;
+      text-decoration: none;
+    }
+    .btn-primary:hover {
+      background: var(--accent-bright);
+      text-decoration: none;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(124, 106, 245, 0.35);
+    }
+
+    /* ─── HERO ────────────────────────────────────────── */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 96px 24px 80px;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--accent-bright);
+      background: var(--accent-dim);
+      border: 1px solid rgba(124, 106, 245, 0.3);
+      margin-bottom: 28px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.2rem, 5vw, 3.4rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      color: #e6edf3;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--accent-bright), #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      max-width: 560px;
+      margin-bottom: 36px;
+      line-height: 1.7;
+    }
+
+    .hero-ctas {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .hero-sub {
+      margin-top: 20px;
+      font-size: 0.8rem;
+      color: var(--text-dim);
+    }
+
+    /* ─── SECTION LAYOUT ──────────────────────────────── */
+    .section {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 72px 24px;
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-bright);
+      margin-bottom: 12px;
+    }
+
+    .section h2 {
+      font-size: clamp(1.5rem, 3vw, 2.1rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #e6edf3;
+      margin-bottom: 16px;
+      line-height: 1.2;
+    }
+
+    .section > p {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      line-height: 1.7;
+      margin-bottom: 48px;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    /* ─── HOW IT WORKS ────────────────────────────────── */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .step {
+      background: var(--surface);
+      padding: 32px 28px;
+      position: relative;
+    }
+    .step:not(:last-child) { border-right: 1px solid var(--border); }
+
+    .step-number {
+      font-size: 0.7rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .step-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--accent-dim);
+      border: 1px solid rgba(124, 106, 245, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      font-size: 1.1rem;
+    }
+
+    .step h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #e6edf3;
+      margin-bottom: 8px;
+    }
+
+    .step p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* ─── DEMO ────────────────────────────────────────── */
+    .demo-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .demo-block {
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .demo-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: var(--surface-raised);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .demo-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .demo-block--before .demo-dot { background: var(--red); }
+    .demo-block--before .demo-header { color: var(--red); }
+    .demo-block--after .demo-dot { background: var(--green); }
+    .demo-block--after .demo-header { color: var(--green); }
+
+    .demo-code {
+      background: #0d1117;
+      padding: 20px;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      line-height: 1.75;
+      color: #8b949e;
+      overflow-x: auto;
+    }
+
+    .pii { color: var(--red); background: var(--red-dim); border-radius: 3px; padding: 0 2px; }
+    .redacted { color: var(--green); background: var(--green-dim); border-radius: 3px; padding: 0 2px; font-weight: 600; }
+    .comment { color: var(--text-dim); font-style: italic; }
+    .heading { color: #c9d1d9; font-weight: 700; }
+    .normal { color: #8b949e; }
+
+    .demo-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      color: var(--text-dim);
+      padding: 8px;
+    }
+
+    /* ─── FEATURES ────────────────────────────────────── */
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    .category-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      transition: border-color 0.15s;
+    }
+    .category-card:hover { border-color: var(--border-bright); }
+
+    .category-icon {
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+    }
+
+    .category-card h3 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #e6edf3;
+      margin-bottom: 8px;
+    }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .tag {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: var(--surface-raised);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-family: var(--mono);
+    }
+
+    /* ─── TRUST STRIP ─────────────────────────────────── */
+    .trust-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      margin-top: 40px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    .trust-strip-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 0 20px 0 0;
+    }
+    .trust-strip-item:not(:last-child) {
+      border-right: 1px solid var(--border);
+      margin-right: 20px;
+    }
+
+    .trust-strip-check {
+      font-size: 0.8rem;
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .trust-strip-item h3 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #e6edf3;
+      line-height: 1.3;
+    }
+
+    .trust-strip-item p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* ─── CTA BANNER ──────────────────────────────────── */
+    .cta-section {
+      max-width: 1000px;
+      margin: 0 auto 96px;
+      padding: 72px 24px;
+    }
+
+    .cta-banner {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 56px 48px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(124, 106, 245, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-banner h2,
+    .cta-banner p,
+    .cta-banner .cta-buttons {
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-banner h2 {
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 700;
+      color: #e6edf3;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .cta-banner p {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ─── FOOTER ──────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 28px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+    }
+
+    footer a { color: var(--text-muted); }
+    footer a:hover { color: var(--text); }
+
+    /* ─── RESPONSIVE ──────────────────────────────────── */
+    @media (max-width: 680px) {
+      nav { padding: 14px 20px; }
+      .steps, .demo-wrap { grid-template-columns: 1fr; }
+      .step:not(:last-child) { border-right: none; border-bottom: 1px solid var(--border); }
+      .trust-strip { grid-template-columns: 1fr 1fr; }
+      .trust-strip-item:not(:last-child) { border-right: none; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 20px; margin-right: 0; }
+      .cta-banner { padding: 40px 24px; }
+      footer { flex-direction: column; gap: 8px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── NAV ─────────────────────────────────────────────── -->
+<nav>
+  <a class="nav-brand" href="#">
+    <img src="assets/icons/icon-48.png" alt="Data Bouncer icon">
+    Data Bouncer
+  </a>
+  <div class="nav-links">
+    <a class="btn-ghost" href="https://github.com/robobooga/data-bouncer" target="_blank" rel="noopener">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      GitHub
+    </a>
+    <a class="btn-primary" href="https://chromewebstore.google.com/detail/data-bouncer-secure-markd/igkbndmmoabdaagjdpiaogmnkplbffni" target="_blank" rel="noopener" style="padding:6px 14px;font-size:0.875rem;">
+      Add to Chrome
+    </a>
+  </div>
+</nav>
+
+<!-- ─── HERO ─────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-badge">
+    <span>&#x1F6E1;</span> v0.2.1 — Chrome 114+
+  </div>
+  <h1>Scrape the web.<br><em>Leave the secrets behind.</em></h1>
+  <p>
+    Data Bouncer converts any web page to clean Markdown — and quietly redacts
+    the emails, API keys, credit cards, and SSNs before they ever leave your browser.
+  </p>
+  <div class="hero-ctas">
+    <a class="btn-primary" href="https://chromewebstore.google.com/detail/data-bouncer-secure-markd/igkbndmmoabdaagjdpiaogmnkplbffni" target="_blank" rel="noopener">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="white" fill-opacity="0.25"/><circle cx="12" cy="12" r="4.5" fill="white"/><path d="M12 7.5h8.66M7.07 15.75 3.34 9M16.93 15.75H7.07" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      Add to Chrome — it's free
+    </a>
+    <a class="btn-ghost" href="https://github.com/robobooga/data-bouncer" target="_blank" rel="noopener">
+      <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+      GitHub
+    </a>
+    <a class="btn-ghost" href="#how-it-works">How it works</a>
+  </div>
+  <p class="hero-sub">Free &amp; open source · No account needed · Nothing leaves your device</p>
+</section>
+
+<hr class="divider">
+
+<!-- ─── HOW IT WORKS + DEMO ───────────────────────────────── -->
+<div class="section" id="how-it-works">
+  <div class="section-label">How it works</div>
+  <h2>Three clicks. Clean output.</h2>
+  <p>Data Bouncer lives in Chrome's side panel and only runs when you ask it to. Here's what it does — and what the result looks like.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-number">Step 01</div>
+      <div class="step-icon">&#x1F9E9;</div>
+      <h3>Open the side panel</h3>
+      <p>Click the Data Bouncer icon in your toolbar. The panel opens alongside the page — no new tab, no popup.</p>
+    </div>
+    <div class="step">
+      <div class="step-number">Step 02</div>
+      <div class="step-icon">&#x26A1;</div>
+      <h3>Hit Convert</h3>
+      <p>One button. Readability extracts the content, Turndown converts it to Markdown, then PII detection runs on the result.</p>
+    </div>
+    <div class="step">
+      <div class="step-number">Step 03</div>
+      <div class="step-icon">&#x1F4CB;</div>
+      <h3>Copy and paste safely</h3>
+      <p>Sensitive values become readable placeholders like <code style="font-family:var(--mono);font-size:0.8em;color:var(--accent-bright)">{{EMAIL_1}}</code>. You get the content. Not the liability.</p>
+    </div>
+  </div>
+
+  <div class="demo-wrap" style="margin-top:24px;">
+    <div class="demo-block demo-block--before">
+      <div class="demo-header">
+        <div class="demo-dot"></div>
+        Raw scrape (dangerous to paste)
+      </div>
+      <div class="demo-code">
+<span class="heading">## Contact Information</span><br>
+<br>
+<span class="normal">Reach our team lead at</span><br>
+<span class="pii">sarah.johnson@acme-corp.com</span><br>
+<span class="normal">or call us at</span> <span class="pii">+1 (415) 867-5309</span>.<br>
+<br>
+<span class="heading">## API Access</span><br>
+<br>
+<span class="normal">Use this key for staging:</span><br>
+<span class="pii">sk-live-aBcD1234567890eFgH9876</span><br>
+<br>
+<span class="heading">## Payment on File</span><br>
+<br>
+<span class="normal">Card ending in</span><br>
+<span class="pii">4242-4242-4242-4242</span><br>
+<span class="normal">CVV:</span> <span class="pii">737</span><br>
+<br>
+<span class="heading">## Employee ID</span><br>
+<br>
+<span class="normal">SSN:</span> <span class="pii">078-05-1120</span>
+      </div>
+    </div>
+
+    <div class="demo-block demo-block--after">
+      <div class="demo-header">
+        <div class="demo-dot"></div>
+        After Data Bouncer (safe to paste)
+      </div>
+      <div class="demo-code">
+<span class="heading">## Contact Information</span><br>
+<br>
+<span class="normal">Reach our team lead at</span><br>
+<span class="redacted">{{EMAIL_1}}</span><br>
+<span class="normal">or call us at</span> <span class="redacted">{{PHONE_1}}</span>.<br>
+<br>
+<span class="heading">## API Access</span><br>
+<br>
+<span class="normal">Use this key for staging:</span><br>
+<span class="redacted">{{API_KEY_1}}</span><br>
+<br>
+<span class="heading">## Payment on File</span><br>
+<br>
+<span class="normal">Card ending in</span><br>
+<span class="redacted">{{CARD_1}}</span><br>
+<span class="normal">CVV:</span> <span class="redacted">{{CVV_1}}</span><br>
+<br>
+<span class="heading">## Employee ID</span><br>
+<br>
+<span class="normal">SSN:</span> <span class="redacted">{{SSN_1}}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ─── COVERAGE + TRUST ──────────────────────────────────── -->
+<div class="section">
+  <div class="section-label">Coverage & Privacy</div>
+  <h2>40+ patterns. Zero network calls.</h2>
+  <p>Real validators (Luhn for cards, ABA checksums for routing numbers, SIN checksums). On-device Gemini Nano runs a second AI pass where available — everything else falls back to regex.</p>
+
+  <div class="category-grid">
+    <div class="category-card">
+      <div class="category-icon">&#x1F4DE;</div>
+      <h3>Contact</h3>
+      <div class="tag-list">
+        <span class="tag">Email</span>
+        <span class="tag">Phone</span>
+        <span class="tag">Fax</span>
+        <span class="tag">Address</span>
+        <span class="tag">Name</span>
+      </div>
+    </div>
+    <div class="category-card">
+      <div class="category-icon">&#x1F4C4;</div>
+      <h3>Identity</h3>
+      <div class="tag-list">
+        <span class="tag">SSN</span>
+        <span class="tag">SIN</span>
+        <span class="tag">UK NINO</span>
+        <span class="tag">NRIC</span>
+        <span class="tag">Passport</span>
+        <span class="tag">Driver's License</span>
+        <span class="tag">Medicare</span>
+        <span class="tag">Tax ID</span>
+        <span class="tag">VIN</span>
+        <span class="tag">DOB</span>
+      </div>
+    </div>
+    <div class="category-card">
+      <div class="category-icon">&#x1F4B3;</div>
+      <h3>Financial</h3>
+      <div class="tag-list">
+        <span class="tag">Credit Card</span>
+        <span class="tag">CVV</span>
+        <span class="tag">Bank Account</span>
+        <span class="tag">Routing Number</span>
+        <span class="tag">IBAN</span>
+      </div>
+    </div>
+    <div class="category-card">
+      <div class="category-icon">&#x1F511;</div>
+      <h3>Credentials</h3>
+      <div class="tag-list">
+        <span class="tag">API Key</span>
+        <span class="tag">Password</span>
+        <span class="tag">GitHub Token</span>
+        <span class="tag">OAuth Token</span>
+        <span class="tag">JWT</span>
+        <span class="tag">SSH Key</span>
+        <span class="tag">DB Connection</span>
+      </div>
+    </div>
+    <div class="category-card">
+      <div class="category-icon">&#x1F310;</div>
+      <h3>Network</h3>
+      <div class="tag-list">
+        <span class="tag">IP (v4/v6)</span>
+        <span class="tag">MAC Address</span>
+        <span class="tag">URLs with secrets</span>
+      </div>
+    </div>
+    <div class="category-card">
+      <div class="category-icon">&#x20BF;</div>
+      <h3>Crypto</h3>
+      <div class="tag-list">
+        <span class="tag">Bitcoin</span>
+        <span class="tag">Ethereum</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="trust-strip">
+    <div class="trust-strip-item">
+      <span class="trust-strip-check">&#x2713; Zero network calls</span>
+      <h3>Runs entirely in your browser</h3>
+      <p>No API calls, no remote model, no server. Open DevTools — you'll see nothing.</p>
+    </div>
+    <div class="trust-strip-item">
+      <span class="trust-strip-check">&#x2713; On-device AI</span>
+      <h3>Gemini Nano stays local</h3>
+      <p>When available, the AI pass runs on-device. No data sent to Google.</p>
+    </div>
+    <div class="trust-strip-item">
+      <span class="trust-strip-check">&#x2713; Open source</span>
+      <h3>Every pattern is auditable</h3>
+      <p>You don't have to trust the marketing — just read the code on GitHub.</p>
+    </div>
+    <div class="trust-strip-item">
+      <span class="trust-strip-check">&#x2713; No account</span>
+      <h3>Install and go</h3>
+      <p>No sign-up, no subscription, no cloud sync. Settings live in <code style="font-family:var(--mono);font-size:0.85em">chrome.storage.local</code>.</p>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<!-- ─── CTA ───────────────────────────────────────────────── -->
+<div class="cta-section">
+  <div class="cta-banner">
+    <h2>Give your clipboard a bouncer.</h2>
+    <p>One click from the Chrome Web Store. Free, open source, nothing leaves your device.</p>
+    <div class="cta-buttons">
+      <a class="btn-primary" href="https://chromewebstore.google.com/detail/data-bouncer-secure-markd/igkbndmmoabdaagjdpiaogmnkplbffni" target="_blank" rel="noopener">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" fill="white" fill-opacity="0.25"/><circle cx="12" cy="12" r="4.5" fill="white"/><path d="M12 7.5h8.66M7.07 15.75 3.34 9M16.93 15.75H7.07" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Add to Chrome — it's free
+      </a>
+      <a class="btn-ghost" href="https://github.com/robobooga/data-bouncer" target="_blank" rel="noopener">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        View on GitHub
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ─── FOOTER ────────────────────────────────────────────── -->
+<footer>
+  <span>Data Bouncer v0.2.1 &nbsp;·&nbsp; MIT License</span>
+  <span>
+    Built by <a href="https://github.com/robobooga" target="_blank" rel="noopener">robobooga</a>
+    &nbsp;·&nbsp;
+    <a href="https://github.com/robobooga/data-bouncer/issues" target="_blank" rel="noopener">Report an issue</a>
+  </span>
+</footer>
+
+</body>
+</html>
